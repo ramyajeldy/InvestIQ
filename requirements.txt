@@ -1,0 +1,7 @@
+requests
+beautifulsoup4
+pymupdf
+google-cloud-storage
+python-dotenv
+chromadb
+google-genai
