@@ -9,7 +9,8 @@ load_dotenv()
 BUCKET_NAME = os.getenv("GCP_BUCKET_NAME")
 
 def get_client():
-    return storage.Client()
+    project = os.getenv("GCP_PROJECT_ID")
+    return storage.Client(project=project)
 
 def upload_json(data, blob_path):
     client = get_client()
