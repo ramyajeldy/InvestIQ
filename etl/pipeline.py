@@ -86,9 +86,15 @@ def run_pipeline():
     load_silver(stocks_silver, metals_silver, docs_silver)
     load_gold(stocks_silver, metals_silver)
 
-    # STATUS
+# STATUS
     final_status = "SUCCESS" if all_passed else "PARTIAL"
     write_pipeline_status(final_status, source_results)
+
+    # Save local copies for GitHub Actions artifacts
+    import json
+    os.makedirs("data/gold", exist_ok=True)
+    with open("pipeline_status.json", "w") as f:
+        json.dump({"status": final_status, "sources": source_results}, f, indent=2)
 
     print("=" * 50)
     print(f"Pipeline complete: {final_status}")

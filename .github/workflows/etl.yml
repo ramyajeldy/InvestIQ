@@ -2,13 +2,13 @@ name: InvestIQ ETL Pipeline
 
 on:
   schedule:
-    - cron: '0 14 * * 1-5'  # Every weekday at 9AM EST
-  workflow_dispatch:          # Allow manual trigger
+    - cron: '0 14 * * 1-5'
+  workflow_dispatch:
 
 jobs:
   etl:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -21,15 +21,23 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-
       - name: Run ETL pipeline
         env:
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-        run: python -u etl/pipeline.py
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+        run: |
+          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp_creds.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json
+          python -u etl/pipeline.py
+
+      - name: Upload pipeline artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-output
+          path: |
+            data/
+            pipeline_status.json
