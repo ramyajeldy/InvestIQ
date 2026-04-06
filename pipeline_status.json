@@ -1,0 +1,22 @@
+{
+  "status": "SUCCESS",
+  "sources": {
+    "alpha_vantage": {
+      "status": "ok",
+      "records": 3
+    },
+    "yahoo_finance": {
+      "status": "ok",
+      "records": 2
+    },
+    "pdfs": {
+      "status": "ok",
+      "records": 3
+    },
+    "web_scrape": {
+      "status": "ok",
+      "records": 3
+    },
+    "chunks_created": 94
+  }
+}

@@ -61,7 +61,7 @@ def transform_documents(raw_docs):
         chunks = chunk_text(cleaned)
         for i, chunk in enumerate(chunks):
             silver.append({
-                "chunk_id": f"{doc['source']}_{i}",
+                "chunk_id": f"{doc['title'].replace(' ', '_')}_{i}",
                 "title": doc["title"],
                 "source": doc["source"],
                 "source_type": doc.get("source_type", "document"),
