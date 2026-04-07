@@ -120,17 +120,47 @@ def market_snapshot(window: str = "7d"):
 
 @app.post("/chat")
 def chat(request: QuestionRequest):
-    question = request.question.strip()
+    try:
+        question = request.question.strip()
 
-    if not question:
-        return {"error": "Question cannot be empty"}
+        if not question:
+            return {"answer": "Question cannot be empty", "sources": [], "route": "error"}
 
-    # Cold start check
-    if not state["ready"]:
+        if not state["ready"]:
+            return {
+                "answer": "Knowledge base is warming up, please try again in a moment.",
+                "sources": [],
+                "route": "warming_up"
+            }
+
+        classification = classify_question(question)
+        route = classification["route"]
+        assets = classification["assets"]
+        window = classification["window"]
+
+        print(f"Question: {question}")
+        print(f"Route: {route} | Assets: {assets} | Window: {window}")
+
+        chunks = []
+        market_data = {}
+
+        if route in ["document", "mixed"]:
+            chunks = retrieve_documents(question)
+
+        if route in ["market_data", "mixed"]:
+            market_data = retrieve_market_data(assets if assets else None)
+
+        result = respond(question, route, chunks, market_data)
+        return result
+
+    except Exception as e:
+        import traceback
+        error_detail = traceback.format_exc()
+        print(f"CHAT ERROR: {error_detail}")
         return {
-            "answer": "Knowledge base is warming up, please try again in a moment.",
+            "answer": f"An error occurred: {str(e)}",
             "sources": [],
-            "route": "warming_up"
+            "route": "error"
         }
 
     # Classify

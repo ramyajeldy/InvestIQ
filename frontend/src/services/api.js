@@ -1,25 +1,28 @@
-import axios from "axios";
+import axios from 'axios'
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3001",
-  timeout: 15000,
-});
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 
-export async function fetchMarketSnapshot(windowCode) {
-  const response = await api.get("/market-snapshot", {
-    params: windowCode ? { window: windowCode } : {},
-  });
-  return response.data;
+const api = axios.create({ 
+  baseURL: BASE_URL,
+  timeout: 60000  // 60 seconds
+})
+
+export const askQuestion = async (question) => {
+  const res = await api.post('/chat', { question })
+  return res.data
 }
 
-export async function fetchSupportedQuestions() {
-  const response = await api.get("/supported-questions");
-  return response.data;
+export const getMarketSnapshot = async (window = '7d') => {
+  const res = await api.get(`/market-snapshot?window=${window}`)
+  return res.data
 }
 
-export async function postChatQuestion(question) {
-  const response = await api.post("/chat", { question });
-  return response.data;
+export const getSupportedQuestions = async () => {
+  const res = await api.get('/supported-questions')
+  return res.data
 }
 
-export default api;
+export const getHealth = async () => {
+  const res = await api.get('/health')
+  return res.data
+}

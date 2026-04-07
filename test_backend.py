@@ -1,7 +1,15 @@
 import requests
-import json
+import time
 
-r = requests.get("http://localhost:3001/market-snapshot?window=30d")
+start = time.time()
+r = requests.post(
+    "http://localhost:3001/chat",
+    json={"question": "what is the difference between stocks and bonds"},
+    timeout=120
+)
+end = time.time()
+print(f"Time taken: {end-start:.1f} seconds")
+print(f"Status: {r.status_code}")
 data = r.json()
-for name, asset in data["assets"].items():
-    print(f"{name}: price={asset['price']} change={asset['change']}%")
+print(f"Route: {data['route']}")
+print(f"Answer: {data['answer']}")

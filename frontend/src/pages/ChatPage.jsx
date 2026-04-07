@@ -54,28 +54,34 @@ function ChatPage() {
     ]);
     setIsLoading(true);
 
-    try {
-      const response = await postChatQuestion(trimmed);
-      const assistantAnswer =
-        response.route === "warming_up"
-          ? "The knowledge base is warming up. Give it a moment and try again."
-          : response.answer;
+    let response;
 
-      setMessages((current) => [
-        ...current,
-        {
-          id: `${Date.now()}-assistant`,
-          role: "assistant",
-          answer: assistantAnswer,
-          sources: response.sources || [],
-          route: response.route,
-        },
-      ]);
+    try {
+      response = await postChatQuestion(trimmed);
     } catch {
       setError("The assistant could not respond right now. Please try again.");
-    } finally {
       setIsLoading(false);
+      return;
     }
+
+    const hasAnswer = typeof response?.answer === "string";
+    const assistantAnswer = hasAnswer
+      ? response.route === "warming_up"
+        ? "The knowledge base is warming up. Give it a moment and try again."
+        : response.answer
+      : "The assistant returned an empty response.";
+
+    setMessages((current) => [
+      ...current,
+      {
+        id: `${Date.now()}-assistant`,
+        role: "assistant",
+        answer: assistantAnswer,
+        sources: Array.isArray(response?.sources) ? response.sources : [],
+        route: response?.route || "unknown",
+      },
+    ]);
+    setIsLoading(false);
   }
 
   function handleSubmit(event) {

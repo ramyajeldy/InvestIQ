@@ -43,12 +43,31 @@ def build_context(chunks: list, market_data: dict) -> str:
     return "\n".join(context_parts)
 
 def call_gemini(prompt: str) -> str:
-    client = genai.Client(api_key=GEMINI_API_KEY)
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-    return response.text
+    import threading
+    result = [None]
+    error = [None]
+    
+    def _call():
+        try:
+            client = genai.Client(api_key=GEMINI_API_KEY)
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            result[0] = response.text
+        except Exception as e:
+            error[0] = str(e)
+    
+    thread = threading.Thread(target=_call)
+    thread.start()
+    thread.join(timeout=45)
+    
+    if result[0]:
+        return result[0]
+    elif error[0]:
+        raise Exception(error[0])
+    else:
+        return "I'm taking too long to respond. Please try again in a moment."
 
 def respond(question: str, route: str, chunks: list, market_data: dict) -> dict:
 

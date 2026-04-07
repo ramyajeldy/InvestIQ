@@ -27,11 +27,11 @@ function markdownToHtml(markdown) {
         return "";
       }
 
-      if (trimmed.startsWith("- ")) {
+      if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
         const items = trimmed
           .split("\n")
-          .filter((line) => line.trim().startsWith("- "))
-          .map((line) => `<li>${formatInline(line.replace(/^- /, "").trim())}</li>`)
+          .filter((line) => /^[*-]\s/.test(line.trim()))
+          .map((line) => `<li>${formatInline(line.replace(/^[*-]\s/, "").trim())}</li>`)
           .join("");
 
         return `<ul>${items}</ul>`;
