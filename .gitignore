@@ -15,17 +15,10 @@ node_modules/
 dist/
 .next/
 
-# Chroma local DB
-chroma_db/
 
 # Data (raw local copies)
-data/bronze/*
-data/silver/*
-data/gold/*
-!data/bronze/.gitkeep
-!data/silver/.gitkeep
-!data/gold/.gitkeep
-
+data/bronze/
+data/silver/
 # OS
 .DS_Store
 Thumbs.db
