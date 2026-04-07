@@ -66,7 +66,7 @@ class QuestionRequest(BaseModel):
 
 @app.get("/")
 def root():
-    return {"message": "InvestIQ API is running"}
+    return {"message": "InvestIQ API is running", "version": "1.0.1"}
 
 @app.get("/health")
 def health():
