@@ -45,7 +45,7 @@ def retrieve_documents(question: str) -> list:
 def retrieve_market_data(assets: list = None) -> dict:
     print(f"Retrieving market data for: {assets}")
     try:
-        client = storage.Client(project=GCP_PROJECT_ID)
+        client = get_gcp_client()
         bucket = client.bucket(GCP_BUCKET_NAME)
         blob = bucket.blob("gold/market_snapshot.json")
         content = blob.download_as_text()

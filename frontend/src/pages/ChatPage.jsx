@@ -12,6 +12,47 @@ const initialMessage = {
   route: "supported_list",
 };
 
+const templatedQuestionExamples = {
+  "How does [asset] compare to [asset] over [time period]?":
+    "How does SPY compare to Gold over 30 days?",
+  "Give me an educational comparison of [asset] vs [asset]":
+    "Give me an educational comparison of QQQ vs AAPL",
+};
+
+function getSourceUrl(source) {
+  const normalized = source.toLowerCase();
+
+  if (normalized.includes("blackrock")) {
+    return "https://www.blackrock.com/us/individual/insights/blackrock-investment-institute/outlook";
+  }
+
+  if (normalized.includes("gold demand")) {
+    return "https://www.gold.org/goldhub/research/gold-demand-trends/gold-demand-trends-full-year-2024";
+  }
+
+  if (normalized.includes("vanguard")) {
+    return "https://investor.vanguard.com/investor-resources-education/mutual-funds";
+  }
+
+  if (normalized.includes("mutual fund")) {
+    return "https://en.wikipedia.org/wiki/Mutual_fund";
+  }
+
+  if (normalized.includes("gold as an investment") || normalized.includes("gold")) {
+    return "https://en.wikipedia.org/wiki/Gold_as_an_investment";
+  }
+
+  if (normalized.includes("stocks") || normalized.includes("investor.gov")) {
+    return "https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks";
+  }
+
+  if (normalized.includes("alpha vantage") || normalized.includes("market data")) {
+    return "https://www.alphavantage.co";
+  }
+
+  return null;
+}
+
 function ChatPage() {
   const [messages, setMessages] = useState([initialMessage]);
   const [question, setQuestion] = useState("");
@@ -19,6 +60,7 @@ function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const scrollRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     async function loadSupportedQuestions() {
@@ -89,6 +131,19 @@ function ChatPage() {
     submitQuestion(question);
   }
 
+  function handleQuestionChipSelect(selectedQuestion) {
+    const exampleQuestion = templatedQuestionExamples[selectedQuestion];
+
+    if (exampleQuestion) {
+      setQuestion(exampleQuestion);
+      setError("");
+      inputRef.current?.focus();
+      return;
+    }
+
+    submitQuestion(selectedQuestion);
+  }
+
   return (
     <section className="chat-layout">
       <div className="hero-panel">
@@ -98,7 +153,7 @@ function ChatPage() {
           InvestIQ compares a focused set of market assets and curated investment
           sources, then responds with educational answers backed by your running backend.
         </p>
-        <QuestionChips questions={suggestedQuestions} onSelect={submitQuestion} />
+        <QuestionChips questions={suggestedQuestions} onSelect={handleQuestionChipSelect} />
       </div>
 
       <div className="chat-panel">
@@ -119,7 +174,15 @@ function ChatPage() {
                   <strong>Sources used</strong>
                   <ul>
                     {message.sources.map((source) => (
-                      <li key={`${message.id}-${source}`}>{source}</li>
+                      <li key={`${message.id}-${source}`}>
+                        {getSourceUrl(source) ? (
+                          <a href={getSourceUrl(source)} target="_blank" rel="noreferrer">
+                            {source}
+                          </a>
+                        ) : (
+                          source
+                        )}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -140,6 +203,7 @@ function ChatPage() {
 
         <form className="chat-input-row" onSubmit={handleSubmit}>
           <input
+            ref={inputRef}
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
             placeholder="Ask a supported investment question..."

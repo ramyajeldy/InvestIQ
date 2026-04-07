@@ -9,7 +9,32 @@ load_dotenv()
 BUCKET_NAME = os.getenv("GCP_BUCKET_NAME")
 
 def get_client():
+    import json
     project = os.getenv("GCP_PROJECT_ID")
+    creds_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+    
+    if creds_json:
+        from google.oauth2 import service_account
+        from google.auth.credentials import AnonymousCredentials
+        import google.auth
+        
+        try:
+            creds_data = json.loads(creds_json)
+            if creds_data.get("type") == "service_account":
+                creds = service_account.Credentials.from_service_account_info(creds_data)
+            else:
+                from google.oauth2.credentials import Credentials
+                creds = Credentials(
+                    token=creds_data.get("access_token"),
+                    refresh_token=creds_data.get("refresh_token"),
+                    token_uri=creds_data.get("token_uri"),
+                    client_id=creds_data.get("client_id"),
+                    client_secret=creds_data.get("client_secret")
+                )
+            return storage.Client(project=project, credentials=creds)
+        except Exception as e:
+            print(f"Credentials error: {e}")
+    
     return storage.Client(project=project)
 
 def upload_json(data, blob_path):

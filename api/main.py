@@ -122,6 +122,7 @@ def market_snapshot(window: str = "7d"):
 def chat(request: QuestionRequest):
     try:
         question = request.question.strip()
+        
 
         if not question:
             return {"answer": "Question cannot be empty", "sources": [], "route": "error"}
