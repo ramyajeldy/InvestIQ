@@ -2,6 +2,7 @@ import json
 import chromadb
 from google import genai
 from google.cloud import storage
+from api.startup import get_gcp_client as get_gcp_storage_client
 from api.config import (
     GEMINI_API_KEY, GCP_BUCKET_NAME, GCP_PROJECT_ID,
     CHROMA_PATH, CHROMA_COLLECTION, MAX_RETRIEVAL_RESULTS
@@ -45,7 +46,7 @@ def retrieve_documents(question: str) -> list:
 def retrieve_market_data(assets: list = None) -> dict:
     print(f"Retrieving market data for: {assets}")
     try:
-        client = get_gcp_client()
+        client = get_gcp_storage_client()
         bucket = client.bucket(GCP_BUCKET_NAME)
         blob = bucket.blob("gold/market_snapshot.json")
         content = blob.download_as_text()
