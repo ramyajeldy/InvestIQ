@@ -22,8 +22,15 @@ state = {
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup — load Chroma and verify market data
     print("InvestIQ API starting up...")
+    
+    # Download Chroma from GCP if not present locally
+    chroma_path = "chroma_db"
+    if not os.path.exists(chroma_path) or not os.listdir(chroma_path):
+        print("Chroma not found locally, downloading from GCP...")
+        from api.startup import download_chroma_from_gcp
+        download_chroma_from_gcp()
+    
     try:
         from api.retriever import get_chroma_collection
         get_chroma_collection()
