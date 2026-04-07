@@ -13,24 +13,26 @@ from api.config import SUPPORTED_QUESTIONS, SUPPORTED_ASSETS, SUPPORTED_WINDOWS
 
 load_dotenv()
 
-# Readiness state — from grill-me Q28
+# Readiness state
 state = {
     "ready": False,
     "market_data_ready": False,
     "vector_store_ready": False
 }
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+def startup():
     print("InvestIQ API starting up...")
-    
+
     # Download Chroma from GCP if not present locally
     chroma_path = "chroma_db"
     if not os.path.exists(chroma_path) or not os.listdir(chroma_path):
         print("Chroma not found locally, downloading from GCP...")
         from api.startup import download_chroma_from_gcp
-        download_chroma_from_gcp()
-    
+        success = download_chroma_from_gcp()
+        print(f"Chroma download: {'success' if success else 'failed'}")
+    else:
+        print("Chroma found locally")
+
     try:
         from api.retriever import get_chroma_collection
         get_chroma_collection()
@@ -40,7 +42,12 @@ async def lifespan(app: FastAPI):
         print(f"Vector store not ready: {e}")
 
     try:
-        data = retrieve_market_data()
+        from api.startup import get_gcp_client
+        gcp_client = get_gcp_client()
+        bucket = gcp_client.bucket(os.getenv("GCP_BUCKET_NAME"))
+        blob = bucket.blob("gold/market_snapshot.json")
+        content = blob.download_as_text()
+        data = json.loads(content)
         if data and data.get("assets"):
             state["market_data_ready"] = True
             print("Market data ready")
@@ -49,10 +56,11 @@ async def lifespan(app: FastAPI):
 
     state["ready"] = state["vector_store_ready"] or state["market_data_ready"]
     print(f"API ready: {state}")
-    yield
-    print("InvestIQ API shutting down...")
 
-app = FastAPI(title="InvestIQ API", lifespan=lifespan)
+# Run startup immediately on import
+startup()
+
+app = FastAPI(title="InvestIQ API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -66,7 +74,7 @@ class QuestionRequest(BaseModel):
 
 @app.get("/")
 def root():
-    return {"message": "InvestIQ API is running", "version": "1.0.1"}
+    return {"message": "InvestIQ API is running", "version": "1.0.2"}
 
 @app.get("/health")
 def health():
@@ -90,15 +98,13 @@ def market_snapshot(window: str = "7d"):
     data = retrieve_market_data()
     if not data:
         return {"error": "Market data unavailable"}
-    
+
     assets = data.get("assets", {})
     result = {}
-    
+
     for name, asset in assets.items():
         if asset is None:
             continue
-        
-        # Select change based on window
         if window == "7d":
             change = asset.get("change_7d") or asset.get("change_percent", 0)
         elif window == "30d":
@@ -113,7 +119,6 @@ def market_snapshot(window: str = "7d"):
             "name": name,
             "price": asset.get("price"),
             "change": change,
-            "change_percent": asset.get("change_percent"),
             "change_7d": asset.get("change_7d"),
             "change_30d": asset.get("change_30d"),
             "change_ytd": asset.get("change_ytd"),
@@ -122,15 +127,13 @@ def market_snapshot(window: str = "7d"):
             "asset_type": asset.get("asset_type"),
             "updated_at": data.get("updated_at")
         }
-    
+
     return {"assets": result, "window": window, "updated_at": data.get("updated_at")}
 
 @app.post("/chat")
 def chat(request: QuestionRequest):
     try:
         question = request.question.strip()
-        
-
         if not question:
             return {"answer": "Question cannot be empty", "sources": [], "route": "error"}
 
@@ -170,26 +173,3 @@ def chat(request: QuestionRequest):
             "sources": [],
             "route": "error"
         }
-
-    # Classify
-    classification = classify_question(question)
-    route = classification["route"]
-    assets = classification["assets"]
-    window = classification["window"]
-
-    print(f"Question: {question}")
-    print(f"Route: {route} | Assets: {assets} | Window: {window}")
-
-    # Retrieve
-    chunks = []
-    market_data = {}
-
-    if route in ["document", "mixed"]:
-        chunks = retrieve_documents(question)
-
-    if route in ["market_data", "mixed"]:
-        market_data = retrieve_market_data(assets if assets else None)
-
-    # Respond
-    result = respond(question, route, chunks, market_data)
-    return result
