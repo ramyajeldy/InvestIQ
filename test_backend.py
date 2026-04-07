@@ -1,19 +1,34 @@
-import requests
+import sys
+sys.path.append('.')
+from api.classifier import classify_question
 
 tests = [
-    "What questions are supported?",
-    "What is a mutual fund and how does it work?",
-    "What is the market outlook for 2026?",
-    "Is gold a good hedge against inflation?",
-    "What are low-risk investment options?",
-    "How does Gold compare to SPY over 30 days?",
-    "What is the weather today?",
+    "what is market risk?",
+    "how does diversification work?",
+    "what is an ETF?",
+    "what is the weather today?",
+    "tell me about bonds",
 ]
 
 for q in tests:
+    result = classify_question(q)
+    print(f"Q: {q}")
+    print(f"Route: {result['route']} | Confidence: {result['confidence']}")
+    print()
+    
+import requests
+
+questions = [
+    "what is market risk?",
+    "how does diversification work?",
+    "what is an ETF?",
+    "what is the weather today?",
+]
+
+for q in questions:
     r = requests.post("http://localhost:3001/chat", json={"question": q})
     data = r.json()
-    print(f"Q: {q[:50]}")
+    print(f"Q: {q}")
     print(f"Route: {data['route']}")
-    print(f"Answer: {data['answer'][:100]}")
+    print(f"Answer: {data['answer'][:150]}")
     print()

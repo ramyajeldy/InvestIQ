@@ -1,6 +1,51 @@
 import re
 from api.config import SUPPORTED_ASSETS, SUPPORTED_WINDOWS, SUPPORTED_QUESTIONS_TEXT
 
+def llm_fallback_classify(question: str) -> dict:
+    try:
+        from google import genai
+        import os
+        client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        prompt = f"""You are a question classifier for an investment research assistant.
+
+Classify this question into one of these routes:
+- "document" — question is about investment concepts, market outlook, funds, gold, inflation, risk, stocks, ETFs, bonds, diversification — answerable from educational documents
+- "market_data" — question asks for specific live prices or performance of SPY, QQQ, AAPL, Gold, or Silver
+- "mixed" — question needs both live data and educational context
+- "unsupported" — question is completely unrelated to investing
+
+Question: "{question}"
+
+Reply with ONLY a JSON object like this:
+{{"route": "document", "reason": "brief reason"}}
+
+No explanation, no markdown, just the JSON."""
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+        import json
+        text = response.text.strip()
+        text = text.replace("```json", "").replace("```", "").strip()
+        result = json.loads(text)
+        route = result.get("route", "unsupported")
+        print(f"LLM fallback classified as: {route} — {result.get('reason', '')}")
+        return {
+            "route": route,
+            "confidence": "llm",
+            "assets": [],
+            "window": None
+        }
+    except Exception as e:
+        print(f"LLM fallback error: {e}")
+        return {
+            "route": "unsupported",
+            "confidence": "low",
+            "assets": [],
+            "window": None
+        }
+        
 def classify_question(question: str) -> dict:
     q = question.lower().strip()
 
@@ -91,11 +136,7 @@ def classify_question(question: str) -> dict:
             "assets": mentioned_assets,
             "window": mentioned_window or "30 days"
         }
+        
+        # LLM fallback for unrecognized questions
+    return llm_fallback_classify(question)
 
-    # Unsupported
-    return {
-        "route": "unsupported",
-        "confidence": "low",
-        "assets": [],
-        "window": None
-    }

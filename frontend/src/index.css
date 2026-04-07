@@ -1,0 +1,74 @@
+:root {
+  font-family: "Segoe UI", "Aptos", sans-serif;
+  color: #f5f0e5;
+  background:
+    radial-gradient(circle at top left, rgba(242, 201, 109, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(30, 58, 95, 0.38), transparent 32%),
+    linear-gradient(180deg, #081220 0%, #07111d 48%, #050c16 100%);
+  color-scheme: dark;
+  --accent: #f2c96d;
+  --text-primary: #f5f0e5;
+  --muted-text: #9fb0c9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+select,
+input {
+  border-radius: 0.9rem;
+  border: 1px solid rgba(132, 161, 204, 0.18);
+  background: rgba(10, 24, 44, 0.92);
+  color: var(--text-primary);
+}
+
+button {
+  cursor: pointer;
+  padding: 0.8rem 1rem;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: rgba(242, 201, 109, 0.36);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
