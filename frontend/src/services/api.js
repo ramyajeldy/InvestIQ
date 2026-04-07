@@ -1,12 +1,14 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3001",
   timeout: 15000,
 });
 
-export async function fetchMarketSnapshot() {
-  const response = await api.get("/market-snapshot");
+export async function fetchMarketSnapshot(windowCode) {
+  const response = await api.get("/market-snapshot", {
+    params: windowCode ? { window: windowCode } : {},
+  });
   return response.data;
 }
 

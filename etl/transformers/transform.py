@@ -29,6 +29,10 @@ def transform_stocks(raw_stocks):
             "change_percent": data["change_percent"].replace("%", "").strip(),
             "volume": int(data["volume"]),
             "latest_trading_day": data["latest_trading_day"],
+            "change_7d": data.get("change_7d"),
+            "change_30d": data.get("change_30d"),
+            "change_ytd": data.get("change_ytd"),
+            "history": data.get("history", {}),
             "asset_type": "stock",
             "transformed_at": datetime.now(UTC).isoformat()
         }

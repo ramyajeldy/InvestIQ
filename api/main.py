@@ -79,11 +79,44 @@ def supported_questions():
     }
 
 @app.get("/market-snapshot")
-def market_snapshot():
+def market_snapshot(window: str = "7d"):
     data = retrieve_market_data()
     if not data:
         return {"error": "Market data unavailable"}
-    return data
+    
+    assets = data.get("assets", {})
+    result = {}
+    
+    for name, asset in assets.items():
+        if asset is None:
+            continue
+        
+        # Select change based on window
+        if window == "7d":
+            change = asset.get("change_7d") or asset.get("change_percent", 0)
+        elif window == "30d":
+            change = asset.get("change_30d") or asset.get("change_percent", 0)
+        elif window == "ytd":
+            change = asset.get("change_ytd") or asset.get("change_percent", 0)
+        else:
+            change = asset.get("change_7d") or asset.get("change_percent", 0)
+
+        result[name] = {
+            "symbol": asset.get("symbol", name),
+            "name": name,
+            "price": asset.get("price"),
+            "change": change,
+            "change_percent": asset.get("change_percent"),
+            "change_7d": asset.get("change_7d"),
+            "change_30d": asset.get("change_30d"),
+            "change_ytd": asset.get("change_ytd"),
+            "history": asset.get("history", {}),
+            "latest_trading_day": asset.get("latest_trading_day") or asset.get("transformed_at"),
+            "asset_type": asset.get("asset_type"),
+            "updated_at": data.get("updated_at")
+        }
+    
+    return {"assets": result, "window": window, "updated_at": data.get("updated_at")}
 
 @app.post("/chat")
 def chat(request: QuestionRequest):

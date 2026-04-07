@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Area,
-  AreaChart,
   CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -11,20 +12,36 @@ import {
 import AssetCard from "../components/AssetCard.jsx";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import { fetchMarketSnapshot } from "../services/api.js";
-import { isOlderThanHours, normalizeAssetData } from "../utils/formatters.js";
+import {
+  buildPriceHistorySeries,
+  formatCurrency,
+  getWindowCode,
+  isOlderThanHours,
+  normalizeAssetData,
+} from "../utils/formatters.js";
 
 const windows = ["7 days", "30 days", "year-to-date"];
+const chartAssets = ["SPY", "QQQ", "AAPL"];
+const chartColors = {
+  SPY: "#f2c96d",
+  QQQ: "#67d2ff",
+  AAPL: "#7bf0c6",
+};
 
 function DashboardPage() {
   const [selectedWindow, setSelectedWindow] = useState(windows[0]);
   const [snapshot, setSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const windowCode = getWindowCode(selectedWindow);
 
   useEffect(() => {
     async function loadSnapshot() {
+      setLoading(true);
+      setError("");
+
       try {
-        const data = await fetchMarketSnapshot();
+        const data = await fetchMarketSnapshot(windowCode);
         setSnapshot(data);
       } catch {
         setError("Unable to load market snapshot data.");
@@ -34,7 +51,7 @@ function DashboardPage() {
     }
 
     loadSnapshot();
-  }, []);
+  }, [windowCode]);
 
   const updatedAt = snapshot?.updated_at;
   const stale = isOlderThanHours(updatedAt, 48);
@@ -44,14 +61,14 @@ function DashboardPage() {
 
     return Object.entries(assets).map(([assetName, assetData]) => ({
       assetName,
-      assetData: normalizeAssetData(assetData, selectedWindow),
+      assetData: normalizeAssetData(assetData),
     }));
-  }, [selectedWindow, snapshot]);
+  }, [snapshot]);
 
-  const chartData = normalizedAssets.map(({ assetName, assetData }) => ({
-    assetName,
-    change: Number(assetData?.resolvedChangePercent || 0),
-  }));
+  const chartData = useMemo(
+    () => buildPriceHistorySeries(snapshot?.assets || {}, chartAssets, windowCode),
+    [snapshot, windowCode],
+  );
 
   return (
     <section className="page-content">
@@ -92,7 +109,7 @@ function DashboardPage() {
                 key={assetName}
                 assetName={assetName}
                 assetData={assetData}
-                updatedAt={updatedAt}
+                updatedAt={assetData?.latest_trading_day || updatedAt}
                 stale={stale}
               />
             ))}
@@ -100,26 +117,23 @@ function DashboardPage() {
 
           <section className="chart-card">
             <div className="chart-copy">
-              <p className="eyebrow">Performance overview</p>
-              <h2>Change percentage across the selected window</h2>
+              <p className="eyebrow">Historical price chart</p>
+              <h2>SPY, QQQ, and AAPL over the selected window</h2>
               <p>
-                This view compares the current backend change values across your
-                five supported assets for the selected window.
+                The line chart uses the backend&apos;s <code>history</code> field to show actual
+                asset prices across the selected time range, filtered to the current window.
               </p>
             </div>
 
             <div className="chart-frame">
               <ResponsiveContainer width="100%" height={320}>
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="dashboardFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#f2c96d" stopOpacity={0.55} />
-                      <stop offset="100%" stopColor="#f2c96d" stopOpacity={0.05} />
-                    </linearGradient>
-                  </defs>
+                <LineChart data={chartData}>
                   <CartesianGrid stroke="#25456f" strokeDasharray="3 3" />
-                  <XAxis dataKey="assetName" stroke="#98acc8" />
-                  <YAxis stroke="#98acc8" />
+                  <XAxis dataKey="displayDate" stroke="#98acc8" />
+                  <YAxis
+                    stroke="#98acc8"
+                    tickFormatter={(value) => formatCurrency(value)}
+                  />
                   <Tooltip
                     contentStyle={{
                       background: "#081a31",
@@ -127,15 +141,21 @@ function DashboardPage() {
                       borderRadius: "14px",
                       color: "#f6f2e7",
                     }}
+                    formatter={(value) => formatCurrency(value)}
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="change"
-                    stroke="#f2c96d"
-                    strokeWidth={3}
-                    fill="url(#dashboardFill)"
-                  />
-                </AreaChart>
+                  <Legend />
+                  {chartAssets.map((assetName) => (
+                    <Line
+                      key={assetName}
+                      type="monotone"
+                      dataKey={assetName}
+                      stroke={chartColors[assetName]}
+                      strokeWidth={3}
+                      dot={false}
+                      connectNulls
+                    />
+                  ))}
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </section>
