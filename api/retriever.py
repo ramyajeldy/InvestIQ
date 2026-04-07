@@ -1,3 +1,4 @@
+import os
 import json
 import chromadb
 from google import genai
@@ -46,11 +47,21 @@ def retrieve_documents(question: str) -> list:
 def retrieve_market_data(assets: list = None) -> dict:
     print(f"Retrieving market data for: {assets}")
     try:
-        client = get_gcp_storage_client()
-        bucket = client.bucket(GCP_BUCKET_NAME)
-        blob = bucket.blob("gold/market_snapshot.json")
-        content = blob.download_as_text()
-        snapshot = json.loads(content)
+        # Try local file first
+        import json
+        gold_path = "data/gold/market_snapshot.json"
+        if os.path.exists(gold_path):
+            with open(gold_path, "r") as f:
+                snapshot = json.load(f)
+        else:
+            # Fallback to GCP
+            from api.startup import get_gcp_client
+            client = get_gcp_client()
+            bucket = client.bucket(GCP_BUCKET_NAME)
+            blob = bucket.blob("gold/market_snapshot.json")
+            content = blob.download_as_text()
+            snapshot = json.loads(content)
+
         all_assets = snapshot.get("assets", {})
         if assets:
             filtered = {k: v for k, v in all_assets.items()

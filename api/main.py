@@ -23,16 +23,7 @@ state = {
 def startup():
     print("InvestIQ API starting up...")
 
-    # Download Chroma from GCP if not present locally
-    chroma_path = "chroma_db"
-    if not os.path.exists(chroma_path) or not os.listdir(chroma_path):
-        print("Chroma not found locally, downloading from GCP...")
-        from api.startup import download_chroma_from_gcp
-        success = download_chroma_from_gcp()
-        print(f"Chroma download: {'success' if success else 'failed'}")
-    else:
-        print("Chroma found locally")
-
+    # Load Chroma from local files (committed to repo)
     try:
         from api.retriever import get_chroma_collection
         get_chroma_collection()
@@ -41,16 +32,18 @@ def startup():
     except Exception as e:
         print(f"Vector store not ready: {e}")
 
+    # Load market data from local gold file
     try:
-        from api.startup import get_gcp_client
-        gcp_client = get_gcp_client()
-        bucket = gcp_client.bucket(os.getenv("GCP_BUCKET_NAME"))
-        blob = bucket.blob("gold/market_snapshot.json")
-        content = blob.download_as_text()
-        data = json.loads(content)
-        if data and data.get("assets"):
-            state["market_data_ready"] = True
-            print("Market data ready")
+        import json
+        gold_path = "data/gold/market_snapshot.json"
+        if os.path.exists(gold_path):
+            with open(gold_path, "r") as f:
+                data = json.load(f)
+            if data and data.get("assets"):
+                state["market_data_ready"] = True
+                print("Market data ready")
+        else:
+            print("Gold file not found locally")
     except Exception as e:
         print(f"Market data not ready: {e}")
 
