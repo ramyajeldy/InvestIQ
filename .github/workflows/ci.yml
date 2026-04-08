@@ -1,4 +1,4 @@
-name: InvestIQ CI
+﻿name: InvestIQ CI
 
 on:
   push:
@@ -7,12 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  # ─────────────────────────────────────────────────────────────
-  # JOB 1 — Backend Tests (pytest)
-  # Each test class/function appears as a named check in GitHub UI
-  # ─────────────────────────────────────────────────────────────
   backend-tests:
-    name: "🧪 Backend Tests (pytest)"
+    name: "Backend Tests (pytest)"
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -30,46 +26,25 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest requests pytest-json-report
+          pip install pytest requests
 
-      # --junit-xml  → makes each test a visible named row in GitHub Actions
-      # -v           → verbose test names in the log
-      # --tb=short   → concise tracebacks on failure
       - name: Run pytest suite
         run: |
           mkdir -p test-results
-          pytest tests/ \
-            --junit-xml=test-results/backend-results.xml \
-            -v --tb=short
-        env:
-          INVESTIQ_API_URL: ${{ secrets.INVESTIQ_API_URL || 'https://investiq-api.onrender.com' }}
+          pytest tests/ --junit-xml=test-results/backend-results.xml -v --tb=short
 
-      # Publishes each test() as a named, clickable check in the GitHub UI
-      - name: Publish Backend Test Results
-        uses: EnricoMi/publish-test-results-action@v2
-        if: always()
-        with:
-          files: test-results/backend-results.xml
-          check_name: "Backend Test Results"
-          comment_title: "Backend Test Results"
-          fail_on: "test failures"
-
-      - name: Upload test artifacts
+      - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: backend-test-results
-          path: test-results/
+          path: test-results/backend-results.xml
           retention-days: 14
 
-  # ─────────────────────────────────────────────────────────────
-  # JOB 2 — Frontend Build (Vite)
-  # ─────────────────────────────────────────────────────────────
   frontend-build:
-    name: "🏗️ Frontend Build (Vite)"
+    name: "Frontend Build (Vite)"
     runs-on: ubuntu-latest
     timeout-minutes: 10
-
     defaults:
       run:
         working-directory: frontend
@@ -91,19 +66,14 @@ jobs:
       - name: Build frontend
         run: npm run build
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://investiq-api.onrender.com' }}
+          VITE_API_URL: https://investiq-api.onrender.com
 
-  # ─────────────────────────────────────────────────────────────
-  # JOB 3 — Playwright E2E Tests
-  # Runs after both jobs above; each test() appears as a named row
-  # ─────────────────────────────────────────────────────────────
   playwright-e2e:
-    name: "🎭 Playwright E2E Tests"
+    name: "Playwright E2E Tests"
     runs-on: ubuntu-latest
     needs: [backend-tests, frontend-build]
     timeout-minutes: 20
     if: github.event_name == 'push'
-
     defaults:
       run:
         working-directory: frontend
@@ -126,29 +96,15 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
-        run: |
-          mkdir -p ../test-results
-          npx playwright test --reporter=list,junit,html
+        run: npx playwright test --reporter=list,html
         env:
           BASE_URL: https://invest-iq-git-main-ramyajeldy-6775s-projects.vercel.app
           API_URL: https://investiq-api.onrender.com
-          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ../test-results/playwright-results.xml
 
-      - name: Publish Playwright Test Results
-        uses: EnricoMi/publish-test-results-action@v2
-        if: always()
-        with:
-          files: test-results/playwright-results.xml
-          check_name: "Playwright E2E Test Results"
-          comment_title: "Playwright E2E Test Results"
-          fail_on: "test failures"
-
-      - name: Upload Playwright report + videos
+      - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
-          path: |
-            frontend/playwright-report/
-            frontend/test-results/
+          path: frontend/playwright-report/
           retention-days: 14
