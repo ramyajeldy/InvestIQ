@@ -13,22 +13,18 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
-
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install pytest requests
-
       - name: Run pytest
         run: |
           mkdir -p test-results
           PYTHONPATH=$PYTHONPATH:$(pwd) pytest tests/ --junit-xml=test-results/results.xml -v --tb=short
-
       - name: Upload results
         uses: actions/upload-artifact@v4
         if: always()
@@ -72,7 +68,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Run Playwright tests
-        run: npx playwright test --reporter=list,html
+        run: npx playwright test --config=playwright.config.cjs --reporter=list,html
         env:
           BASE_URL: https://invest-iq-git-main-ramyajeldy-6775s-projects.vercel.app
       - uses: actions/upload-artifact@v4
