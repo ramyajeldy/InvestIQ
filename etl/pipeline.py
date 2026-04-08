@@ -25,6 +25,8 @@ def run_pipeline():
             "status": "ok" if passed else "partial",
             "records": len([v for v in stocks_raw.values() if v])
         }
+        if not passed:
+            all_passed = False
     except Exception as e:
         print(f"FAILED: stocks - {e}")
         stocks_raw = {}
@@ -38,6 +40,8 @@ def run_pipeline():
             "status": "ok" if passed else "partial",
             "records": len([v for v in metals_raw.values() if v])
         }
+        if not passed:
+            all_passed = False
     except Exception as e:
         print(f"FAILED: metals - {e}")
         metals_raw = {}
@@ -50,6 +54,8 @@ def run_pipeline():
             "status": "ok" if len(pdfs_raw) == 3 else "partial",
             "records": len(pdfs_raw)
         }
+        if len(pdfs_raw) != 3:
+            all_passed = False
     except Exception as e:
         print(f"FAILED: pdfs - {e}")
         pdfs_raw = []
@@ -62,6 +68,8 @@ def run_pipeline():
             "status": "ok" if len(web_raw) == 3 else "partial",
             "records": len(web_raw)
         }
+        if len(web_raw) != 3:
+            all_passed = False
     except Exception as e:
         print(f"FAILED: web - {e}")
         web_raw = []
