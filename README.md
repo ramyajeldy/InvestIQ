@@ -155,7 +155,3 @@ InvestIQ/
 │       ├── ci.yml        # Test + build pipeline
 │       └── etl.yml       # Scheduled ETL pipeline
 └── README.md
-
-## License
-
-MIT
