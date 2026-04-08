@@ -25,6 +25,25 @@ def test_document_question_routes_correctly():
     assert result["window"] is None
 
 
+def test_portfolio_diversification_question_routes_correctly(monkeypatch):
+    monkeypatch.setattr(
+        classifier,
+        "llm_fallback_classify",
+        lambda question: {
+            "route": "unsupported",
+            "confidence": "llm",
+            "assets": [],
+            "window": None,
+        },
+    )
+
+    result = classifier.classify_question("What is portfolio diversification and why does it matter?")
+
+    assert result["route"] == "document"
+    assert result["assets"] == []
+    assert result["window"] is None
+
+
 def test_market_data_only_question_routes_correctly():
     result = classifier.classify_question("Show AAPL performance for 30 days")
 
@@ -59,4 +78,3 @@ def test_unsupported_question_uses_llm_fallback(monkeypatch):
     assert called["question"] == "What is the weather in Toronto today?"
     assert result["route"] == "unsupported"
     assert result["confidence"] == "llm"
-
