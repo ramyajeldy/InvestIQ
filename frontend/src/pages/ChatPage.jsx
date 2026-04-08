@@ -53,6 +53,36 @@ function getSourceUrl(source) {
   return null;
 }
 
+function buildConversationTurns(messages) {
+  const turns = [];
+
+  messages.forEach((message) => {
+    if (message.role === "user") {
+      turns.push({
+        id: `${message.id}-turn`,
+        userMessage: message,
+        assistantMessage: null,
+      });
+      return;
+    }
+
+    const lastTurn = turns[turns.length - 1];
+
+    if (lastTurn && lastTurn.userMessage && !lastTurn.assistantMessage) {
+      lastTurn.assistantMessage = message;
+      return;
+    }
+
+    turns.push({
+      id: `${message.id}-turn`,
+      userMessage: null,
+      assistantMessage: message,
+    });
+  });
+
+  return turns;
+}
+
 function ChatPage() {
   const [messages, setMessages] = useState([initialMessage]);
   const [question, setQuestion] = useState("");
@@ -61,6 +91,7 @@ function ChatPage() {
   const [error, setError] = useState("");
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
+  const conversationTurns = buildConversationTurns(messages);
 
   useEffect(() => {
     async function loadSupportedQuestions() {
@@ -158,42 +189,45 @@ function ChatPage() {
 
       <div className="chat-panel">
         <div className="chat-feed" ref={scrollRef}>
-          {messages.map((message) => (
-            <article
-              key={message.id}
-              className={`message-bubble ${message.role === "user" ? "user" : "assistant"}`}
-            >
-              <span className="message-role">
-                {message.role === "user" ? "You" : "InvestIQ"}
-              </span>
-
-              <MarkdownContent content={message.answer} />
-
-              {message.role === "assistant" && message.sources?.length ? (
-                <div className="sources-box">
-                  <strong>Sources used</strong>
-                  <ul>
-                    {message.sources.map((source) => (
-                      <li key={`${message.id}-${source}`}>
-                        {getSourceUrl(source) ? (
-                          <a href={getSourceUrl(source)} target="_blank" rel="noreferrer">
-                            {source}
-                          </a>
-                        ) : (
-                          source
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+          {conversationTurns.map((turn) => (
+            <div key={turn.id}>
+              {turn.userMessage ? (
+                <article className="message-bubble user">
+                  <span className="message-role">You</span>
+                  <MarkdownContent content={turn.userMessage.answer} />
+                </article>
               ) : null}
 
-              {message.role === "assistant" ? (
-                <p className="disclaimer">
-                  InvestIQ provides educational information only, not financial advice.
-                </p>
+              {turn.assistantMessage ? (
+                <article className="message-bubble assistant">
+                  <span className="message-role">InvestIQ</span>
+                  <MarkdownContent content={turn.assistantMessage.answer} />
+
+                  {turn.assistantMessage.sources?.length ? (
+                    <div className="sources-box">
+                      <strong>Sources used</strong>
+                      <ul>
+                        {turn.assistantMessage.sources.map((source) => (
+                          <li key={`${turn.assistantMessage.id}-${source}`}>
+                            {getSourceUrl(source) ? (
+                              <a href={getSourceUrl(source)} target="_blank" rel="noreferrer">
+                                {source}
+                              </a>
+                            ) : (
+                              source
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  <p className="disclaimer">
+                    InvestIQ provides educational information only, not financial advice.
+                  </p>
+                </article>
               ) : null}
-            </article>
+            </div>
           ))}
 
           {isLoading ? <LoadingSpinner label="InvestIQ is preparing a response..." /> : null}
