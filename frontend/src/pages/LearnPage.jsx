@@ -9,7 +9,8 @@ const learnCards = [
     subtitle: "A broad-market ETF tied to the S&P 500",
     whatItIs:
       "SPY is an exchange-traded fund that tracks the S&P 500, which means one investment gives you exposure to 500 large U.S. companies across many industries.",
-    analogy: 'Think of SPY like a pizza with 500 slices, where each slice is a big company in the U.S. market.',
+    analogy:
+      "Think of SPY like a pizza with 500 slices, where each slice is a big company in the U.S. market.",
     whyPeopleInvest:
       "People often use SPY as a core long-term holding because it spreads risk across many companies and gives a simple way to follow the overall U.S. stock market.",
     facts: [
@@ -31,7 +32,8 @@ const learnCards = [
     subtitle: "A tech-heavy ETF tied to the Nasdaq-100",
     whatItIs:
       "QQQ is an ETF that tracks the Nasdaq-100, a group of large non-financial companies with a strong tilt toward technology and growth-oriented businesses.",
-    analogy: 'QQQ is like SPY, but the spicy tech version with more concentration in fast-growing companies.',
+    analogy:
+      "QQQ is like SPY, but the spicy tech version with more concentration in fast-growing companies.",
     whyPeopleInvest:
       "Investors often choose QQQ when they want more exposure to technology leaders and are comfortable with bigger swings than a broad-market fund might have.",
     facts: [
@@ -53,9 +55,10 @@ const learnCards = [
     subtitle: "A single stock representing Apple Inc.",
     whatItIs:
       "AAPL is the stock of Apple Inc. Buying it means you are investing in one company rather than a basket of many companies.",
-    analogy: 'AAPL is like betting on one horse instead of owning a whole stable.',
+    analogy:
+      "AAPL is like betting on one horse instead of owning a whole stable.",
     whyPeopleInvest:
-      "Some investors buy AAPL because they believe in Apple’s business strength, products, and long-term growth potential, but it comes with more company-specific risk than an ETF.",
+      "Some investors buy AAPL because they believe in Apple's business strength, products, and long-term growth potential, but it comes with more company-specific risk than an ETF.",
     facts: [
       { label: "Type", value: "Single stock" },
       { label: "Company", value: "Apple Inc." },
@@ -120,7 +123,7 @@ function LearnAccordionCard({ card, isOpen, onToggle }) {
           <p className="learn-card-subtitle">{card.subtitle}</p>
         </div>
         <span className="learn-card-icon" aria-hidden="true">
-          {isOpen ? "−" : "+"}
+          {isOpen ? "-" : "+"}
         </span>
       </button>
 
@@ -270,7 +273,7 @@ function LearnPage() {
         <h2>Ready to explore with real questions?</h2>
         <p className="hero-copy">
           Head over to the Chat tab and ask for a comparison, a beginner
-          explanation, or a market outlook answer grounded in InvestIQ&apos;s
+          explanation, or a market outlook answer grounded in InvestIQ's
           supported sources.
         </p>
         <div className="question-chip-row">

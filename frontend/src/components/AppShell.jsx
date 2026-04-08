@@ -2,7 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 
 const links = [
   { to: "/", label: "Chat" },
-  { to: "/learn", label: "Learn" },
+  { to: "/learn", label: "Learn", highlight: true, badge: "Start here" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/compare", label: "Compare" },
 ];
@@ -26,14 +26,36 @@ function AppShell() {
               to={link.to}
               end={link.to === "/"}
               className={({ isActive }) =>
-                isActive ? "nav-link active" : "nav-link"
+                [
+                  "nav-link",
+                  isActive ? "active" : "",
+                  link.highlight ? "nav-link-highlight" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")
               }
             >
-              {link.label}
+              <span>{link.label}</span>
+              {link.badge ? (
+                <span className="nav-link-badge">{link.badge}</span>
+              ) : null}
             </NavLink>
           ))}
         </nav>
       </header>
+
+      <div className="topbar-callout-wrap">
+        <div className="topbar-callout">
+          <strong>New to investing?</strong>
+          <span>
+            Start with the Learn tab for simple explanations of SPY, QQQ, and
+            AAPL before you explore chat answers and comparisons.
+          </span>
+          <NavLink to="/learn" className="topbar-callout-link">
+            Open Learn
+          </NavLink>
+        </div>
+      </div>
 
       <main className="page-shell">
         <Outlet />
