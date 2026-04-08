@@ -3,8 +3,16 @@ import {
   formatRelativeTime,
   formatSignedPercent,
 } from "../utils/formatters.js";
+import Tooltip from "./Tooltip.jsx";
 
-function AssetCard({ assetName, assetData, updatedAt, stale, compact = false }) {
+function AssetCard({
+  assetName,
+  assetData,
+  updatedAt,
+  stale,
+  compact = false,
+  tooltipText = "",
+}) {
   const change = assetData?.resolvedChangePercent;
   const positive = Number(change) >= 0;
 
@@ -13,7 +21,15 @@ function AssetCard({ assetName, assetData, updatedAt, stale, compact = false }) 
       <div className="asset-card-header">
         <div>
           <p className="eyebrow">Tracked asset</p>
-          <h3>{assetName}</h3>
+          <h3>
+            {tooltipText ? (
+              <Tooltip text={tooltipText}>
+                <span className="asset-name-trigger">{assetName}</span>
+              </Tooltip>
+            ) : (
+              assetName
+            )}
+          </h3>
         </div>
         <span className={`pill ${positive ? "gain" : "loss"}`}>
           {formatSignedPercent(change)}
