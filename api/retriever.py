@@ -1,9 +1,6 @@
-import os
-import json
 import chromadb
 from google import genai
-from google.cloud import storage
-from api.startup import get_gcp_client as get_gcp_storage_client
+from api.market_snapshot import filter_snapshot_assets, load_market_snapshot
 from api.config import (
     GEMINI_API_KEY, GCP_BUCKET_NAME, GCP_PROJECT_ID,
     CHROMA_PATH, CHROMA_COLLECTION, MAX_RETRIEVAL_RESULTS
@@ -47,30 +44,8 @@ def retrieve_documents(question: str) -> list:
 def retrieve_market_data(assets: list = None) -> dict:
     print(f"Retrieving market data for: {assets}")
     try:
-        # Try local file first
-        import json
-        gold_path = "data/gold/market_snapshot.json"
-        if os.path.exists(gold_path):
-            with open(gold_path, "r") as f:
-                snapshot = json.load(f)
-        else:
-            # Fallback to GCP
-            from api.startup import get_gcp_client
-            client = get_gcp_client()
-            bucket = client.bucket(GCP_BUCKET_NAME)
-            blob = bucket.blob("gold/market_snapshot.json")
-            content = blob.download_as_text()
-            snapshot = json.loads(content)
-
-        all_assets = snapshot.get("assets", {})
-        if assets:
-            filtered = {k: v for k, v in all_assets.items()
-                       if k in assets}
-            return {
-                "assets": filtered,
-                "updated_at": snapshot.get("updated_at")
-            }
-        return snapshot
+        snapshot = load_market_snapshot()
+        return filter_snapshot_assets(snapshot, assets)
     except Exception as e:
         print(f"Market data retrieval error: {e}")
         return {}

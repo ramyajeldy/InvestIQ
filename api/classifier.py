@@ -127,6 +127,14 @@ def classify_question(question: str) -> dict:
         }
 
     # Market data only — asset mentioned but no document needed
+    if any(phrase in q for phrase in ["diversification", "diversify", "portfolio allocation"]):
+        return {
+            "route": "document",
+            "confidence": "high",
+            "assets": [],
+            "window": None
+        }
+
     if mentioned_assets and not any(phrase in q for phrase in [
         "what is", "how does", "explain", "tell me about", "why"
     ]):
