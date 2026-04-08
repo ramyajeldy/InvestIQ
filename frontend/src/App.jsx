@@ -4,12 +4,14 @@ import AppShell from "./components/AppShell.jsx";
 import ChatPage from "./pages/ChatPage.jsx";
 import ComparePage from "./pages/ComparePage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
+import LearnPage from "./pages/LearnPage.jsx";
 
 function App() {
   return (
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<ChatPage />} />
+        <Route path="/learn" element={<LearnPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/compare" element={<ComparePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

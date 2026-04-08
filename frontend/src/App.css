@@ -370,6 +370,173 @@
   padding: 1.45rem;
 }
 
+.learn-layout {
+  gap: 1.75rem;
+}
+
+.learn-hero,
+.learn-cta,
+.learn-table-card {
+  padding: 1.8rem;
+}
+
+.learn-heading {
+  align-items: start;
+}
+
+.learn-intro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.learn-intro-card h2,
+.learn-section h2,
+.learn-cta h2 {
+  margin: 0 0 0.75rem;
+}
+
+.learn-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.learn-accordion {
+  display: grid;
+  gap: 1rem;
+}
+
+.learn-card {
+  background: linear-gradient(180deg, rgba(10, 26, 49, 0.92), rgba(7, 18, 34, 0.96));
+  border: 1px solid rgba(132, 161, 204, 0.16);
+  border-radius: 1.35rem;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.24);
+  overflow: hidden;
+}
+
+.learn-card.open {
+  border-color: rgba(242, 201, 109, 0.3);
+}
+
+.learn-card-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+  padding: 1.35rem 1.4rem;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.learn-card-subtitle {
+  margin: 0.45rem 0 0;
+  color: var(--muted-text);
+}
+
+.learn-card-icon {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(242, 201, 109, 0.12);
+  color: var(--accent);
+  font-size: 1.35rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.learn-card-body {
+  padding: 0 1.4rem 1.4rem;
+  display: grid;
+  gap: 1.25rem;
+  border-top: 1px solid rgba(132, 161, 204, 0.12);
+}
+
+.learn-copy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  padding-top: 1.25rem;
+}
+
+.learn-copy-block,
+.learn-facts,
+.learn-prompts {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.learn-copy-block h3,
+.learn-facts h3,
+.learn-prompts h3 {
+  margin: 0;
+}
+
+.learn-copy-block p,
+.learn-facts p,
+.learn-prompts p {
+  margin: 0;
+  color: var(--muted-text);
+}
+
+.learn-facts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.learn-fact-tile {
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  background: rgba(9, 24, 44, 0.82);
+  border: 1px solid rgba(132, 161, 204, 0.14);
+}
+
+.learn-fact-tile span {
+  display: block;
+  color: var(--muted-text);
+  font-size: 0.8rem;
+  margin-bottom: 0.4rem;
+}
+
+.learn-question-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.learn-table-wrap {
+  overflow-x: auto;
+  margin-top: 1.25rem;
+}
+
+.learn-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.learn-table th,
+.learn-table td {
+  padding: 0.95rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(132, 161, 204, 0.12);
+}
+
+.learn-table thead th {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.learn-table tbody th {
+  color: var(--text-primary);
+  width: 18%;
+}
+
 .chart-frame {
   margin-top: 1.2rem;
   height: 320px;
@@ -401,6 +568,12 @@
   }
 
   .compare-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .learn-intro-grid,
+  .learn-copy-grid,
+  .learn-facts-grid {
     grid-template-columns: 1fr;
   }
 }

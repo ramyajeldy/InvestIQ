@@ -70,7 +70,7 @@ def build_chroma_collection(docs):
             ids=[d["chunk_id"] for d in batch],
             documents=[d["text"] for d in batch],
             embeddings=batch_embeddings,
-            metadatas=[{
+            metadata=[{
                 "title": d["title"],
                 "source": d["source"],
                 "source_type": d.get("source_type", "document"),
