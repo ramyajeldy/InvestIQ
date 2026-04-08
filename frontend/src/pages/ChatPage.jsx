@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import MarkdownContent from "../components/MarkdownContent.jsx";
 import QuestionChips from "../components/QuestionChips.jsx";
-import { fetchSupportedQuestions, postChatQuestion } from "../services/api.js";
+import { postChatQuestion } from "../services/api.js";
 
 const initialMessage = {
   id: "welcome",
@@ -12,12 +12,16 @@ const initialMessage = {
   route: "supported_list",
 };
 
-const templatedQuestionExamples = {
-  "How does [asset] compare to [asset] over [time period]?":
-    "How does SPY compare to Gold over 30 days?",
-  "Give me an educational comparison of [asset] vs [asset]":
-    "Give me an educational comparison of QQQ vs AAPL",
-};
+const sampleQuestions = [
+  "What is the market outlook for 2026?",
+  "Is SPY a good long-term investment?",
+  "What is dollar cost averaging?",
+  "How does QQQ compare to SPY?",
+  "What is a mutual fund and how does it work?",
+  "Is gold a good hedge against inflation?",
+  "What are low-risk investment options for beginners?",
+  "How does compound interest work?",
+];
 
 function getSourceUrl(source) {
   const normalized = source.toLowerCase();
@@ -86,25 +90,11 @@ function buildConversationTurns(messages) {
 function ChatPage() {
   const [messages, setMessages] = useState([initialMessage]);
   const [question, setQuestion] = useState("");
-  const [suggestedQuestions, setSuggestedQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
   const conversationTurns = buildConversationTurns(messages);
-
-  useEffect(() => {
-    async function loadSupportedQuestions() {
-      try {
-        const data = await fetchSupportedQuestions();
-        setSuggestedQuestions(data.questions || []);
-      } catch {
-        setError("Unable to load supported questions right now.");
-      }
-    }
-
-    loadSupportedQuestions();
-  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -163,28 +153,22 @@ function ChatPage() {
   }
 
   function handleQuestionChipSelect(selectedQuestion) {
-    const exampleQuestion = templatedQuestionExamples[selectedQuestion];
-
-    if (exampleQuestion) {
-      setQuestion(exampleQuestion);
-      setError("");
-      inputRef.current?.focus();
-      return;
-    }
-
     submitQuestion(selectedQuestion);
   }
 
   return (
     <section className="chat-layout">
-      <div className="hero-panel">
+      <div className="hero-panel chat-sidebar">
         <p className="eyebrow">Educational AI assistant</p>
         <h1>Ask grounded investment questions with clear sources.</h1>
         <p className="hero-copy">
           InvestIQ compares a focused set of market assets and curated investment
           sources, then responds with educational answers backed by your running backend.
         </p>
-        <QuestionChips questions={suggestedQuestions} onSelect={handleQuestionChipSelect} />
+        <QuestionChips questions={sampleQuestions} onSelect={handleQuestionChipSelect} />
+        <p className="chat-sidebar-disclaimer">
+          {"\u{1F4CB}"} For educational purposes only. Not financial advice.
+        </p>
       </div>
 
       <div className="chat-panel">
@@ -199,7 +183,7 @@ function ChatPage() {
               ) : null}
 
               {turn.assistantMessage ? (
-                <article className="message-bubble assistant">
+                <article className="message-bubble assistant answer-bubble">
                   <span className="message-role">InvestIQ</span>
                   <MarkdownContent content={turn.assistantMessage.answer} />
 

@@ -205,6 +205,18 @@
   max-width: 52ch;
 }
 
+.chat-sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-sidebar-disclaimer {
+  margin-top: auto;
+  padding-top: 1rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
 .question-chip-row {
   display: flex;
   flex-wrap: wrap;
@@ -248,6 +260,11 @@
   border: 1px solid rgba(132, 161, 204, 0.16);
 }
 
+.answer-bubble {
+  padding: 1.1rem 1.25rem;
+  border-left: 3px solid #4f46e5;
+}
+
 .message-bubble.user {
   margin-left: auto;
   background: linear-gradient(135deg, rgba(242, 201, 109, 0.24), rgba(123, 83, 10, 0.28));
@@ -268,6 +285,7 @@
 .markdown-content h2,
 .markdown-content h3 {
   margin: 0 0 0.7rem;
+  line-height: 1.7;
 }
 
 .markdown-content ul,
@@ -279,6 +297,10 @@
   padding: 0.15rem 0.35rem;
   border-radius: 0.4rem;
   background: rgba(255, 255, 255, 0.08);
+}
+
+.markdown-content strong {
+  color: #4f46e5;
 }
 
 .sources-box {
