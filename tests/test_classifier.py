@@ -78,3 +78,88 @@ def test_unsupported_question_uses_llm_fallback(monkeypatch):
     assert called["question"] == "What is the weather in Toronto today?"
     assert result["route"] == "unsupported"
     assert result["confidence"] == "llm"
+
+
+def test_long_term_spy_investment_question_is_not_unsupported(monkeypatch):
+    monkeypatch.setattr(
+        classifier,
+        "llm_fallback_classify",
+        lambda question: {
+            "route": "unsupported",
+            "confidence": "llm",
+            "assets": [],
+            "window": None,
+        },
+    )
+
+    result = classifier.classify_question("Is SPY a good long-term investment?")
+
+    assert result["route"] != "unsupported"
+
+
+def test_dollar_cost_averaging_routes_to_document(monkeypatch):
+    monkeypatch.setattr(
+        classifier,
+        "llm_fallback_classify",
+        lambda question: {
+            "route": "unsupported",
+            "confidence": "llm",
+            "assets": [],
+            "window": None,
+        },
+    )
+
+    result = classifier.classify_question("What is dollar cost averaging?")
+
+    assert result["route"] == "document"
+
+
+def test_should_i_invest_in_qqq_is_not_unsupported(monkeypatch):
+    monkeypatch.setattr(
+        classifier,
+        "llm_fallback_classify",
+        lambda question: {
+            "route": "unsupported",
+            "confidence": "llm",
+            "assets": [],
+            "window": None,
+        },
+    )
+
+    result = classifier.classify_question("Should I invest in QQQ?")
+
+    assert result["route"] != "unsupported"
+
+
+def test_compound_interest_routes_to_document(monkeypatch):
+    monkeypatch.setattr(
+        classifier,
+        "llm_fallback_classify",
+        lambda question: {
+            "route": "unsupported",
+            "confidence": "llm",
+            "assets": [],
+            "window": None,
+        },
+    )
+
+    result = classifier.classify_question("What is compound interest?")
+
+    assert result["route"] == "document"
+
+
+def test_weather_question_stays_unsupported(monkeypatch):
+    monkeypatch.setattr(
+        classifier,
+        "llm_fallback_classify",
+        lambda question: {
+            "route": "unsupported",
+            "confidence": "llm",
+            "assets": [],
+            "window": None,
+        },
+    )
+
+    result = classifier.classify_question("What is the weather today?")
+
+    assert result["route"] == "unsupported"

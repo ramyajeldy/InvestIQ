@@ -1,18 +1,102 @@
 import re
-from api.config import SUPPORTED_ASSETS, SUPPORTED_WINDOWS, SUPPORTED_QUESTIONS_TEXT
+
+from api.config import SUPPORTED_ASSETS, SUPPORTED_WINDOWS
+
+
+FINANCIAL_TERMS = [
+    "investment",
+    "invest",
+    "investing",
+    "dollar cost",
+    "compound interest",
+    "compound",
+    "interest",
+    "etf",
+    "index fund",
+    "stock market",
+    "portfolio",
+    "return",
+    "returns",
+    "yield",
+    "dividend",
+    "bear market",
+    "bull market",
+    "recession",
+    "volatility",
+    "risk",
+    "reward",
+    "asset allocation",
+    "rebalance",
+    "401k",
+    "ira",
+    "roth",
+    "retirement",
+    "mutual fund",
+    "fund",
+    "inflation",
+    "hedge",
+    "market outlook",
+]
+
+DOCUMENT_KEYWORDS = [
+    "long-term",
+    "long term",
+    "good investment",
+    "should i invest",
+    "dollar cost",
+    "compound interest",
+    "compound",
+    "interest",
+    "etf",
+    "index fund",
+    "stock market",
+    "portfolio",
+    "return",
+    "returns",
+    "yield",
+    "dividend",
+    "bear market",
+    "bull market",
+    "recession",
+    "volatility",
+    "risk",
+    "reward",
+    "asset allocation",
+    "rebalance",
+    "401k",
+    "ira",
+    "roth",
+    "retirement",
+]
+
+EXPLANATION_PROMPTS = ["what is", "how does", "explain", "tell me about"]
+ASSET_QUESTION_WORDS = ["what", "how", "why", "good", "should", "is", "explain"]
+
+
+def contains_phrase(text: str, phrase: str) -> bool:
+    if " " in phrase or "-" in phrase:
+        return phrase in text
+
+    return re.search(rf"\b{re.escape(phrase)}\b", text) is not None
+
 
 def llm_fallback_classify(question: str) -> dict:
     try:
         from google import genai
+        import json
         import os
+
         client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
         prompt = f"""You are a question classifier for an investment research assistant.
 
 Classify this question into one of these routes:
-- "document" — question is about investment concepts, market outlook, funds, gold, inflation, risk, stocks, ETFs, bonds, diversification — answerable from educational documents
-- "market_data" — question asks for specific live prices or performance of SPY, QQQ, AAPL, Gold, or Silver
-- "mixed" — question needs both live data and educational context
-- "unsupported" — question is completely unrelated to investing
+- "document" - question is about investment concepts, market outlook, funds, gold, inflation, risk, stocks, ETFs, bonds, diversification, long-term investing, or beginner financial education
+- "market_data" - question asks for specific live prices or performance of SPY, QQQ, AAPL, Gold, or Silver
+- "mixed" - question needs both live data and educational context
+- "unsupported" - question is completely unrelated to investing
+
+When in doubt between document and unsupported, choose document.
+Only use unsupported for clearly non-investment topics like weather, sports, cooking, or personal questions.
 
 Question: "{question}"
 
@@ -23,51 +107,55 @@ No explanation, no markdown, just the JSON."""
 
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=prompt
+            contents=prompt,
         )
-        import json
         text = response.text.strip()
         text = text.replace("```json", "").replace("```", "").strip()
         result = json.loads(text)
-        route = result.get("route", "unsupported")
-        print(f"LLM fallback classified as: {route} — {result.get('reason', '')}")
+        route = result.get("route") or "document"
+        if route == "unsupported":
+            route = "document"
+        print(f"LLM fallback classified as: {route} - {result.get('reason', '')}")
         return {
             "route": route,
             "confidence": "llm",
             "assets": [],
-            "window": None
+            "window": None,
         }
     except Exception as e:
         print(f"LLM fallback error: {e}")
         return {
-            "route": "unsupported",
+            "route": "document",
             "confidence": "low",
             "assets": [],
-            "window": None
+            "window": None,
         }
-        
+
+
 def classify_question(question: str) -> dict:
     q = question.lower().strip()
 
-    # Question 1: What questions are supported?
-    if any(phrase in q for phrase in [
-        "what questions", "what can you", "what do you support",
-        "help me with", "what are you able"
-    ]):
+    if any(
+        phrase in q
+        for phrase in [
+            "what questions",
+            "what can you",
+            "what do you support",
+            "help me with",
+            "what are you able",
+        ]
+    ):
         return {
             "route": "supported_list",
             "confidence": "high",
             "assets": [],
-            "window": None
+            "window": None,
         }
 
-    # Detect assets mentioned
     mentioned_assets = [
-        asset for asset in SUPPORTED_ASSETS
-        if asset.lower() in q
+        asset for asset in SUPPORTED_ASSETS if asset.lower() in q
     ]
 
-    # Detect time window mentioned
     mentioned_window = None
     for window in SUPPORTED_WINDOWS:
         if window.lower() in q:
@@ -80,71 +168,93 @@ def classify_question(question: str) -> dict:
     elif "year" in q or "ytd" in q:
         mentioned_window = "year-to-date"
 
-    # Question 2 & 7: Compare assets
     if any(phrase in q for phrase in ["compare", "vs", "versus", "against", "better"]):
         if len(mentioned_assets) >= 1:
             return {
                 "route": "mixed",
                 "confidence": "high",
                 "assets": mentioned_assets,
-                "window": mentioned_window or "30 days"
+                "window": mentioned_window or "30 days",
             }
 
-    # Question 3: Low risk options
-    if any(phrase in q for phrase in ["low-risk", "low risk", "safe investment", "conservative"]):
+    if any(
+        phrase in q
+        for phrase in ["low-risk", "low risk", "safe investment", "conservative"]
+    ):
         return {
             "route": "document",
             "confidence": "high",
             "assets": [],
-            "window": None
+            "window": None,
         }
 
-    # Question 4: Mutual fund
     if any(phrase in q for phrase in ["mutual fund", "what is a fund", "how does a fund"]):
         return {
             "route": "document",
             "confidence": "high",
             "assets": [],
-            "window": None
+            "window": None,
         }
 
-    # Question 5: Market outlook
-    if any(phrase in q for phrase in ["market outlook", "outlook for 2026", "2026 outlook", "forecast"]):
+    if any(
+        phrase in q
+        for phrase in ["market outlook", "outlook for 2026", "2026 outlook", "forecast"]
+    ):
         return {
             "route": "document",
             "confidence": "high",
             "assets": [],
-            "window": None
+            "window": None,
         }
 
-    # Question 6: Gold hedge
     if any(phrase in q for phrase in ["hedge", "inflation", "gold hedge", "safe haven"]):
         return {
             "route": "document",
             "confidence": "high",
             "assets": [],
-            "window": None
+            "window": None,
         }
 
-    # Market data only — asset mentioned but no document needed
     if any(phrase in q for phrase in ["diversification", "diversify", "portfolio allocation"]):
         return {
             "route": "document",
             "confidence": "high",
             "assets": [],
-            "window": None
+            "window": None,
         }
 
-    if mentioned_assets and not any(phrase in q for phrase in [
-        "what is", "how does", "explain", "tell me about", "why"
-    ]):
+    if any(contains_phrase(q, keyword) for keyword in DOCUMENT_KEYWORDS):
+        return {
+            "route": "document",
+            "confidence": "high",
+            "assets": mentioned_assets,
+            "window": mentioned_window,
+        }
+
+    if any(prompt in q for prompt in EXPLANATION_PROMPTS) and any(
+        contains_phrase(q, term) for term in FINANCIAL_TERMS
+    ):
+        return {
+            "route": "document",
+            "confidence": "high",
+            "assets": mentioned_assets,
+            "window": mentioned_window,
+        }
+
+    if mentioned_assets and any(contains_phrase(q, word) for word in ASSET_QUESTION_WORDS):
+        return {
+            "route": "mixed",
+            "confidence": "high",
+            "assets": mentioned_assets,
+            "window": mentioned_window or "30 days",
+        }
+
+    if mentioned_assets:
         return {
             "route": "market_data",
             "confidence": "medium",
             "assets": mentioned_assets,
-            "window": mentioned_window or "30 days"
+            "window": mentioned_window or "30 days",
         }
-        
-        # LLM fallback for unrecognized questions
-    return llm_fallback_classify(question)
 
+    return llm_fallback_classify(question)
