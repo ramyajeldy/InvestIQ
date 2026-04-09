@@ -1,0 +1,13 @@
+﻿name: Keep API Alive
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping InvestIQ API
+        run: |
+          curl -s https://investiq-api.onrender.com/warmup
+          echo "Pinged at $(date)"
