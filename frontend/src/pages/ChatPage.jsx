@@ -1,4 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  FiCpu,
+  FiLink2,
+  FiMessageSquare,
+  FiUser,
+} from "react-icons/fi";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 import MarkdownContent from "../components/MarkdownContent.jsx";
 import QuestionChips from "../components/QuestionChips.jsx";
@@ -21,6 +27,29 @@ const sampleQuestions = [
   "Is gold a good hedge against inflation?",
   "What are low-risk investment options for beginners?",
   "How does compound interest work?",
+];
+
+const loadingTips = [
+  {
+    label: "Quick tip",
+    copy: "ETFs like SPY spread your money across many companies, which can reduce single-company risk for beginners.",
+  },
+  {
+    label: "Pattern to notice",
+    copy: "Gold often gets attention when investors feel cautious, while growth assets tend to lead when confidence is stronger.",
+  },
+  {
+    label: "Beginner lens",
+    copy: "Percentage change usually tells a clearer story than raw price when you compare different kinds of assets.",
+  },
+  {
+    label: "Habit builder",
+    copy: "Dollar-cost averaging means investing on a schedule, so you build consistency instead of trying to time every move.",
+  },
+  {
+    label: "Compare smarter",
+    copy: "A single stock like AAPL can move faster than an ETF, but it also carries more company-specific risk.",
+  },
 ];
 
 function getSourceUrl(source) {
@@ -92,15 +121,33 @@ function ChatPage() {
   const [question, setQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [activeTipIndex, setActiveTipIndex] = useState(0);
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
   const conversationTurns = buildConversationTurns(messages);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setActiveTipIndex(0);
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setActiveTipIndex((current) => (current + 1) % loadingTips.length);
+    }, 4000);
+
+    return () => window.clearInterval(intervalId);
+  }, [isLoading]);
 
   async function submitQuestion(nextQuestion) {
     const trimmed = nextQuestion.trim();
@@ -156,11 +203,18 @@ function ChatPage() {
     submitQuestion(selectedQuestion);
   }
 
+  const activeLoadingTip = loadingTips[activeTipIndex];
+
   return (
     <section className="chat-layout">
       <div className="hero-panel chat-sidebar">
         <p className="eyebrow">Educational AI assistant</p>
-        <h1>Ask grounded investment questions with clear sources.</h1>
+        <h1 className="icon-heading">
+          <span className="title-icon" aria-hidden="true">
+            <FiMessageSquare />
+          </span>
+          <span>Ask grounded investment questions with clear sources.</span>
+        </h1>
         <p className="hero-copy">
           InvestIQ compares a focused set of market assets and curated investment
           sources, then responds with educational answers backed by your running backend.
@@ -177,19 +231,28 @@ function ChatPage() {
             <div key={turn.id}>
               {turn.userMessage ? (
                 <article className="message-bubble user">
-                  <span className="message-role">You</span>
+                  <span className="message-role icon-label">
+                    <FiUser aria-hidden="true" />
+                    <span>You</span>
+                  </span>
                   <MarkdownContent content={turn.userMessage.answer} />
                 </article>
               ) : null}
 
               {turn.assistantMessage ? (
                 <article className="message-bubble assistant answer-bubble">
-                  <span className="message-role">InvestIQ</span>
+                  <span className="message-role icon-label">
+                    <FiCpu aria-hidden="true" />
+                    <span>InvestIQ</span>
+                  </span>
                   <MarkdownContent content={turn.assistantMessage.answer} />
 
                   {turn.assistantMessage.sources?.length ? (
                     <div className="sources-box">
-                      <strong>Sources used</strong>
+                      <strong className="icon-subtitle">
+                        <FiLink2 aria-hidden="true" />
+                        <span>Sources used</span>
+                      </strong>
                       <ul>
                         {turn.assistantMessage.sources.map((source) => (
                           <li key={`${turn.assistantMessage.id}-${source}`}>
@@ -214,7 +277,15 @@ function ChatPage() {
             </div>
           ))}
 
-          {isLoading ? <LoadingSpinner label="InvestIQ is preparing a response..." /> : null}
+          {isLoading ? (
+            <div className="loading-row" aria-live="polite">
+              <LoadingSpinner label="InvestIQ is preparing a response..." />
+              <div className="loading-tip-card">
+                <p className="loading-tip-label">{activeLoadingTip.label}</p>
+                <p className="loading-tip-copy">{activeLoadingTip.copy}</p>
+              </div>
+            </div>
+          ) : null}
         </div>
 
         {error ? <p className="error-banner">{error}</p> : null}

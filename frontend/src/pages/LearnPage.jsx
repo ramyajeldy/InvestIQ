@@ -1,5 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  FiArrowRightCircle,
+  FiBarChart2,
+  FiBookOpen,
+  FiBriefcase,
+  FiCpu,
+  FiLayers,
+} from "react-icons/fi";
 
 const learnCards = [
   {
@@ -179,13 +187,22 @@ function LearnAccordionCard({ card, isOpen, onToggle }) {
 function LearnPage() {
   const [openCard, setOpenCard] = useState("spy");
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="page-content learn-layout">
       <section className="hero-panel learn-hero">
         <div className="page-heading learn-heading">
           <div>
             <p className="eyebrow">Learn</p>
-            <h1>Learn the Basics</h1>
+            <h1 className="icon-heading">
+              <span className="title-icon" aria-hidden="true">
+                <FiBookOpen />
+              </span>
+              <span>Learn the Basics</span>
+            </h1>
             <p className="hero-copy">
               Build confidence with simple explanations of the core assets you
               can explore in InvestIQ before you start asking deeper questions.
@@ -195,7 +212,12 @@ function LearnPage() {
 
         <div className="learn-intro-grid">
           <div className="insight-card learn-intro-card">
-            <h2>What InvestIQ does</h2>
+            <h2 className="icon-heading small">
+              <span className="title-icon" aria-hidden="true">
+                <FiBriefcase />
+              </span>
+              <span>What InvestIQ does</span>
+            </h2>
             <p>
               InvestIQ is an educational investment research assistant designed
               to help you compare a small set of supported assets, understand
@@ -203,7 +225,12 @@ function LearnPage() {
             </p>
           </div>
           <div className="insight-card learn-intro-card">
-            <h2>How it works</h2>
+            <h2 className="icon-heading small">
+              <span className="title-icon" aria-hidden="true">
+                <FiCpu />
+              </span>
+              <span>How it works</span>
+            </h2>
             <p>
               The app combines retrieval-augmented generation (RAG) with Gemini
               to answer from curated documents and structured market data, so
@@ -218,7 +245,12 @@ function LearnPage() {
         <div className="page-heading">
           <div>
             <p className="eyebrow">Instruments</p>
-            <h2>Understand SPY, QQQ, and AAPL</h2>
+            <h2 className="icon-heading small">
+              <span className="title-icon" aria-hidden="true">
+                <FiLayers />
+              </span>
+              <span>Understand SPY, QQQ, and AAPL</span>
+            </h2>
           </div>
         </div>
 
@@ -240,7 +272,12 @@ function LearnPage() {
         <div className="page-heading">
           <div>
             <p className="eyebrow">Quick Compare</p>
-            <h2>SPY vs QQQ vs AAPL</h2>
+            <h2 className="icon-heading small">
+              <span className="title-icon" aria-hidden="true">
+                <FiBarChart2 />
+              </span>
+              <span>SPY vs QQQ vs AAPL</span>
+            </h2>
           </div>
         </div>
 
@@ -270,7 +307,12 @@ function LearnPage() {
 
       <section className="hero-panel learn-cta">
         <p className="eyebrow">Next Step</p>
-        <h2>Ready to explore with real questions?</h2>
+        <h2 className="icon-heading small">
+          <span className="title-icon" aria-hidden="true">
+            <FiArrowRightCircle />
+          </span>
+          <span>Ready to explore with real questions?</span>
+        </h2>
         <p className="hero-copy">
           Head over to the Chat tab and ask for a comparison, a beginner
           explanation, or a market outlook answer grounded in InvestIQ's

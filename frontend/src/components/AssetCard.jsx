@@ -15,9 +15,12 @@ function AssetCard({
 }) {
   const change = assetData?.resolvedChangePercent;
   const positive = Number(change) >= 0;
+  const assetCardClass = `asset-card asset-card-${assetName.toLowerCase()} ${
+    compact ? "compact" : ""
+  }`;
 
   return (
-    <article className={`asset-card ${compact ? "compact" : ""}`}>
+    <article className={assetCardClass}>
       <div className="asset-card-header">
         <div>
           <p className="eyebrow">Tracked asset</p>

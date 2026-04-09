@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 const links = [
   { to: "/", label: "Chat" },
@@ -8,6 +8,9 @@ const links = [
 ];
 
 function AppShell() {
+  const location = useLocation();
+  const showLearnCallout = location.pathname !== "/learn";
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -44,22 +47,31 @@ function AppShell() {
         </nav>
       </header>
 
-      <div className="topbar-callout-wrap">
-        <div className="topbar-callout">
-          <strong>New to investing?</strong>
-          <span>
-            Start with the Learn tab for simple explanations of SPY, QQQ, and
-            AAPL before you explore chat answers and comparisons.
-          </span>
-          <NavLink to="/learn" className="topbar-callout-link">
-            Open Learn
-          </NavLink>
+      {showLearnCallout ? (
+        <div className="topbar-callout-wrap">
+          <div className="topbar-callout">
+            <strong>New to investing?</strong>
+            <span>
+              Start with the Learn tab for simple explanations of SPY, QQQ, and
+              AAPL before you explore chat answers and comparisons.
+            </span>
+            <NavLink to="/learn" className="topbar-callout-link">
+              Open Learn
+            </NavLink>
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <main className="page-shell">
         <Outlet />
       </main>
+
+      <footer className="app-footer">
+        <div className="app-footer-inner">
+          <p>Built by Ramya Jeldy</p>
+          <p>Copyright © 2026 InvestIQ. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
