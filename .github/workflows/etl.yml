@@ -6,11 +6,14 @@ on:
 jobs:
   etl:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,13 +35,37 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json
           python -u etl/pipeline.py
 
+      - name: Download fresh snapshot from GCS to repo
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
+        run: |
+          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp_creds.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json
+          pip install google-cloud-storage --quiet
+          python - <<'PYEOF'
+          import os, json
+          from google.cloud import storage
+          bucket_name = os.getenv("GCP_BUCKET_NAME")
+          client = storage.Client()
+          bucket = client.bucket(bucket_name)
+          blob = bucket.blob("gold/market_snapshot.json")
+          os.makedirs("data/gold", exist_ok=True)
+          blob.download_to_filename("data/gold/market_snapshot.json")
+          print(f"Downloaded market_snapshot.json from gs://{bucket_name}/gold/market_snapshot.json")
+          with open("data/gold/market_snapshot.json") as f:
+              data = json.load(f)
+          print(f"Assets: {list(data.get('assets', {}).keys())}")
+          print(f"Updated at: {data.get('updated_at', 'unknown')}")
+          PYEOF
+
       - name: Commit updated market data back to repo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/gold/market_snapshot.json
           git diff --staged --quiet || git commit -m "etl: update market snapshot $(date +'%Y-%m-%d %H:%M UTC')"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ramyajeldy/InvestIQ.git HEAD:main
 
       - name: Upload pipeline artifacts
         uses: actions/upload-artifact@v4
