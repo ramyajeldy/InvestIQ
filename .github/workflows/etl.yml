@@ -1,17 +1,16 @@
-name: InvestIQ ETL Pipeline
-
+﻿name: InvestIQ ETL Pipeline
 on:
   schedule:
     - cron: '0 14 * * 1-5'
   workflow_dispatch:
-
 jobs:
   etl:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,6 +31,14 @@ jobs:
           echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp_creds.json
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json
           python -u etl/pipeline.py
+
+      - name: Commit updated market data back to repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/gold/market_snapshot.json
+          git diff --staged --quiet || git commit -m "etl: update market snapshot $(date +'%Y-%m-%d %H:%M UTC')"
+          git push
 
       - name: Upload pipeline artifacts
         uses: actions/upload-artifact@v4
