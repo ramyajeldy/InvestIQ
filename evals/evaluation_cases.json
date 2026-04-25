@@ -1,0 +1,135 @@
+{
+  "metadata": {
+    "created": "2026-04-25",
+    "model": "gemini-2.5-flash",
+    "evaluator": "manual + semantic-similarity",
+    "system": "InvestIQ RAG pipeline (Assignment 6)",
+    "scoring_rubric": {
+      "5": "Correct, grounded, well-cited, concise",
+      "4": "Correct, minor omission or slight over-verbosity",
+      "3": "Mostly correct, missing key detail or weak citation",
+      "2": "Partially correct or misleading",
+      "1": "Wrong or hallucinated"
+    }
+  },
+
+  "representative_cases": [
+    {
+      "id": "RC-01",
+      "label": "Basic concept — what is a mutual fund",
+      "query": "What is a mutual fund and how does it work?",
+      "expected_route": "document",
+      "actual_route": "document",
+      "route_correct": true,
+      "retrieved_chunks": 3,
+      "expected_keywords": ["pool", "investors", "diversification", "NAV", "fund manager"],
+      "response_summary": "Explained pooled capital structure, NAV pricing, role of fund manager, and diversification benefit. Cited two internal knowledge chunks.",
+      "keywords_found": ["pool", "investors", "diversification", "NAV", "fund manager"],
+      "keyword_hit_rate": 1.0,
+      "manual_score": 5,
+      "notes": "Accurate, well-grounded answer. Retrieval worked correctly."
+    },
+    {
+      "id": "RC-02",
+      "label": "Strategy question — low-risk investing",
+      "query": "What are good investment options for someone who wants low risk?",
+      "expected_route": "document",
+      "actual_route": "document",
+      "route_correct": true,
+      "retrieved_chunks": 3,
+      "expected_keywords": ["bonds", "money market", "treasury", "savings", "fixed income"],
+      "response_summary": "Listed bonds, money market funds, and treasury bills with brief explanations of each. Grounded in retrieved content.",
+      "keywords_found": ["bonds", "money market", "treasury", "fixed income"],
+      "keyword_hit_rate": 0.8,
+      "manual_score": 4,
+      "notes": "Good answer, did not mention savings accounts specifically despite being in docs."
+    },
+    {
+      "id": "RC-03",
+      "label": "Market concept — what is diversification",
+      "query": "Why is diversification important in a portfolio?",
+      "expected_route": "document",
+      "actual_route": "document",
+      "route_correct": true,
+      "retrieved_chunks": 2,
+      "expected_keywords": ["risk", "correlation", "spread", "asset classes", "volatility"],
+      "response_summary": "Explained risk reduction through uncorrelated assets, mentioned different asset classes. Clean and accurate.",
+      "keywords_found": ["risk", "correlation", "asset classes", "volatility"],
+      "keyword_hit_rate": 0.8,
+      "manual_score": 5,
+      "notes": "Strong answer. Retrieval returned highly relevant chunks."
+    },
+    {
+      "id": "RC-04",
+      "label": "Out-of-scope — weather question",
+      "query": "What is the weather in Toronto today?",
+      "expected_route": "unsupported",
+      "actual_route": "unsupported",
+      "route_correct": true,
+      "retrieved_chunks": 0,
+      "expected_keywords": ["outside", "investment", "support"],
+      "response_summary": "Politely declined and reminded user of supported topics.",
+      "keywords_found": ["outside", "support"],
+      "keyword_hit_rate": 0.67,
+      "manual_score": 5,
+      "notes": "Routing worked correctly. Clean refusal with helpful redirect."
+    },
+    {
+      "id": "RC-05",
+      "label": "Concept + out-of-scope check — tax question",
+      "query": "How does capital gains tax work on stocks?",
+      "expected_route": "unsupported",
+      "actual_route": "document",
+      "route_correct": false,
+      "retrieved_chunks": 2,
+      "expected_keywords": ["tax", "out of scope", "not supported"],
+      "response_summary": "Attempted to answer capital gains tax from document retrieval. Retrieved marginally relevant chunks about stock selling but gave a partially correct but ungrounded answer.",
+      "keywords_found": [],
+      "keyword_hit_rate": 0.0,
+      "manual_score": 2,
+      "notes": "ROUTING FAILURE. Tax questions are out-of-scope but classifier routed to document. Classifier boundary is fuzzy near financial-but-non-investment topics."
+    }
+  ],
+
+  "failure_cases": [
+    {
+      "id": "FC-01",
+      "label": "Hallucination risk — specific fund performance",
+      "query": "How did the Vanguard Total Market Index Fund perform last year?",
+      "expected_route": "unsupported",
+      "actual_route": "document",
+      "route_correct": false,
+      "retrieved_chunks": 2,
+      "response_summary": "Retrieved generic index fund chunks and generated a response that sounded authoritative but contained no actual Vanguard performance data. The model fabricated a reasonable-sounding but unverifiable performance figure.",
+      "manual_score": 1,
+      "failure_type": "hallucination + routing error",
+      "root_cause": "Classifier does not distinguish between conceptual questions (supported) and specific fund/performance lookups (not supported). Retriever returns vaguely relevant chunks which the LLM then over-interprets.",
+      "improvement_applied": "Added 'specific fund performance' as explicit unsupported category in classifier prompt. Improved retriever to return chunk confidence scores and reject low-confidence results."
+    },
+    {
+      "id": "FC-02",
+      "label": "Ambiguous query — multi-topic confusion",
+      "query": "Should I buy gold or stocks right now?",
+      "expected_route": "mixed",
+      "actual_route": "document",
+      "route_correct": false,
+      "retrieved_chunks": 2,
+      "response_summary": "Routed to document-only instead of mixed (which would fetch live market data + docs). Answer was purely conceptual and missed the 'right now' real-time dimension the user was asking about.",
+      "manual_score": 2,
+      "failure_type": "routing miss — should have been mixed",
+      "root_cause": "Classifier does not reliably detect 'right now' / temporal signals that indicate market_data route is needed. The word 'buy' and 'gold' both appear in document chunks, pulling toward document route.",
+      "improvement_applied": "Added temporal signal detection to classifier prompt: queries with 'right now', 'today', 'currently', 'this week' are routed to mixed when financial assets are mentioned."
+    }
+  ],
+
+  "summary": {
+    "total_cases": 7,
+    "representative_correct_routes": 4,
+    "representative_route_accuracy": "4/5 = 80%",
+    "failure_cases_routes_correct": 0,
+    "average_manual_score_representative": 4.2,
+    "average_keyword_hit_rate": 0.65,
+    "main_weakness": "Classifier boundary is imprecise for tax topics, specific fund lookups, and temporal queries",
+    "main_strength": "Core conceptual investment questions routed and answered well"
+  }
+}

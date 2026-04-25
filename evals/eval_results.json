@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-04-25T15:02:45.498171",
+  "classifier_routing": {
+    "eval": "classifier_routing",
+    "total": 7,
+    "correct": 4,
+    "accuracy": 0.571,
+    "threshold": 0.7,
+    "passed": false
+  },
+  "output_quality": {
+    "eval": "output_quality",
+    "avg_keyword_hit_rate": 0.654,
+    "avg_manual_score": 4.2,
+    "threshold_khr": 0.7,
+    "threshold_score": 3.5,
+    "passed": false
+  },
+  "end_to_end": {
+    "eval": "end_to_end",
+    "total_tasks": 5,
+    "successful_tasks": 3,
+    "success_rate": 0.6,
+    "threshold": 0.6,
+    "passed": true,
+    "tasks": [
+      {
+        "id": "E2E-01",
+        "description": "User asks investment concept question \u2192 gets grounded answer",
+        "representative_case_id": "RC-01",
+        "success": true,
+        "notes": "Full pipeline: route=document, retrieve, answer with citation"
+      },
+      {
+        "id": "E2E-02",
+        "description": "User asks out-of-scope question \u2192 gets polite refusal",
+        "representative_case_id": "RC-04",
+        "success": true,
+        "notes": "Route=unsupported, no retrieval, clean redirect message"
+      },
+      {
+        "id": "E2E-03",
+        "description": "User asks temporal market question \u2192 mixed route",
+        "representative_case_id": "FC-02",
+        "success": false,
+        "notes": "FAIL: Routed to document-only, missed real-time market data fetch"
+      },
+      {
+        "id": "E2E-04",
+        "description": "User asks specific fund performance \u2192 should refuse, not hallucinate",
+        "representative_case_id": "FC-01",
+        "success": false,
+        "notes": "FAIL: Routed to document, model hallucinated performance figures"
+      },
+      {
+        "id": "E2E-05",
+        "description": "User asks strategy question \u2192 document route with good answer",
+        "representative_case_id": "RC-02",
+        "success": true,
+        "notes": "Route=document, retrieval returned 3 chunks, answer grounded"
+      }
+    ]
+  },
+  "overall_passed": false
+}

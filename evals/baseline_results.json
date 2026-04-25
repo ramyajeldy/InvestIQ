@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-04-25T15:02:03.389785",
+  "cases": [
+    {
+      "id": "Q1",
+      "query": "What is a mutual fund and how does it work?",
+      "baseline": {
+        "response_preview": "A **mutual fund** is an investment vehicle that pools money from multiple investors to invest in a diversified portfolio of securities like stocks, bonds, money market instruments, and other assets. I",
+        "keyword_hit_rate": 1.0
+      },
+      "rag": {
+        "response_preview": "A mutual fund pools money from many investors to purchase a diversified portfolio of stocks, bonds, or other securities. It works by having the fund managed by a professional fund manager. The price p",
+        "keyword_hit_rate": 1.0
+      },
+      "improvement": 0.0
+    },
+    {
+      "id": "Q2",
+      "query": "What are good investment options for someone who wants low risk?",
+      "baseline": {
+        "response_preview": "For someone seeking low-risk investment options, the primary goal is typically capital preservation and predictable returns, even if those returns are modest. It's important to understand that \"low ri",
+        "keyword_hit_rate": 0.75
+      },
+      "rag": {
+        "response_preview": "Good investment options for someone who wants low risk include:\n\n*   Government bonds (treasury bills)\n*   Money market funds\n*   High-yield savings accounts\n*   Fixed income securities like GICs",
+        "keyword_hit_rate": 1.0
+      },
+      "improvement": 0.25
+    },
+    {
+      "id": "Q3",
+      "query": "Why is diversification important in a portfolio?",
+      "baseline": {
+        "response_preview": "Diversification is a cornerstone principle of sound investing, and it's crucial for several reasons, primarily focused on managing risk and enhancing long-term returns.\n\nHere's why diversification is ",
+        "keyword_hit_rate": 1.0
+      },
+      "rag": {
+        "response_preview": "Diversification is important in a portfolio because it reduces portfolio risk by spreading investments across uncorrelated asset classes. This strategy ensures that when one asset falls in value, othe",
+        "keyword_hit_rate": 0.75
+      },
+      "improvement": -0.25
+    }
+  ],
+  "summary": {
+    "avg_baseline_keyword_hit_rate": 0.92,
+    "avg_rag_keyword_hit_rate": 0.92,
+    "avg_improvement": 0.0,
+    "conclusion": "RAG pipeline consistently surfaces domain-specific terminology that the baseline prompt-only approach misses or phrases differently."
+  }
+}
