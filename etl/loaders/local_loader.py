@@ -53,9 +53,5 @@ def write_pipeline_status(status, source_results):
         "sources": source_results,
         "written_at": datetime.now(UTC).isoformat()
     }
-    _write_json(pipeline_status, "pipeline_status.json")
+    _write_json(pipeline_status, f"{DATA_DIR}/pipeline_status.json")
     print(f"Pipeline status: {status}")
-
-if __name__ == "__main__":
-    print("Local loader module ready")
-
