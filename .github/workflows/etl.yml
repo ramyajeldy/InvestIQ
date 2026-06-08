@@ -16,56 +16,35 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+
       - name: Install dependencies
         run: pip install -r requirements.txt
+
       - name: Run ETL pipeline
         env:
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
-          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
         run: |
-          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp_creds.json
-          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json
           python -u etl/pipeline.py
-      - name: Download fresh snapshot from GCS
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-          GCP_BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
-        run: |
-          echo "$GOOGLE_APPLICATION_CREDENTIALS_JSON" > /tmp/gcp_creds.json
-          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp_creds.json
-          pip install google-cloud-storage --quiet
-          python - <<'PYEOF'
-          import os, json
-          from google.cloud import storage
-          bucket_name = os.getenv("GCP_BUCKET_NAME")
-          client = storage.Client()
-          bucket = client.bucket(bucket_name)
-          blob = bucket.blob("gold/market_snapshot.json")
-          os.makedirs("data/gold", exist_ok=True)
-          blob.download_to_filename("data/gold/market_snapshot.json")
-          with open("data/gold/market_snapshot.json") as f:
-              data = json.load(f)
-          print(f"Downloaded snapshot updated_at: {data.get('updated_at')}")
-          PYEOF
+
       - name: Commit updated market data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/gold/market_snapshot.json
+          git add data/gold/market_snapshot.json data/bronze/ data/silver/
           git diff --staged --quiet || git commit -m "etl: update market snapshot $(date +'%Y-%m-%d %H:%M UTC')"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ramyajeldy/InvestIQ.git HEAD:main
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: pipeline-output
           path: |
-            data/
+            data/gold/
             pipeline_status.json
