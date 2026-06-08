@@ -389,43 +389,4 @@ GCP_BUCKET_NAME=your_bucket_here
 3. **Stale knowledge base** — the 94 chunks were built once. There's no alert when the data gets outdated.
 4. **Alpha Vantage dependency** — if this API goes down, the `mixed` route fails silently with no user-facing message.
 
----
 
-## 📋 Assignment 6 Checklist
-
-### Continuity
-- [x] Extended Assignment 5 project
-- [x] Deployed on Vercel (live)
-- [x] Repository is public
-
-### Architecture
-- [x] Classified as Hybrid (RAG + LLM routing)
-- [x] Justified architecture choice with tradeoffs
-- [x] Explained main alternative rejected (pure RAG)
-- [x] Explained capability not implemented (conversation memory)
-- [x] Discussed cost, overhead, and performance
-
-### Pipeline / Data Flow
-- [x] Pipeline diagram in README
-- [x] ETL stages documented
-- [x] Internal debugging artifacts described
-
-### Evaluation
-- [x] Output quality evaluated (KHR + manual score)
-- [x] End-to-end task success evaluated
-- [x] Upstream component evaluated (classifier routing)
-- [x] 5 representative cases in evaluation_cases.json
-- [x] 2 failure cases in evaluation_cases.json
-- [x] Baseline comparison (RAG vs plain Gemini)
-- [x] Retrieval evaluation (chunk count, similarity threshold)
-- [x] Routing evaluation (accuracy per case)
-- [x] Metrics justified
-
-### Improvement
-- [x] Improvement based on evidence (57% → 100% routing accuracy)
-- [x] Before/after results documented
-- [x] Remaining weaknesses identified
-
-### Submission
-- [x] Vercel URL submitted
-- [x] Public GitHub repository URL submitted
