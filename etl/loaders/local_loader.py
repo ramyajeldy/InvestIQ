@@ -5,7 +5,9 @@ from datetime import datetime, UTC
 DATA_DIR = "data"
 
 def _write_json(data, path):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    dir_name = os.path.dirname(path)
+    if dir_name:
+        os.makedirs(dir_name, exist_ok=True)
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
     print(f"Saved: {path}")
@@ -56,3 +58,4 @@ def write_pipeline_status(status, source_results):
 
 if __name__ == "__main__":
     print("Local loader module ready")
+
