@@ -16,30 +16,25 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
       - name: Run ETL pipeline
         env:
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          python -u etl/pipeline.py
-
-      - name: Commit updated market data
+        run: python -u etl/pipeline.py
+      - name: Commit and push updated market data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/gold/market_snapshot.json data/bronze/ data/silver/
+          git add data/gold/market_snapshot.json
           git diff --staged --quiet || git commit -m "etl: update market snapshot $(date +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ramyajeldy/InvestIQ.git HEAD:main
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: always()
