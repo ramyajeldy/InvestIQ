@@ -4,7 +4,7 @@
       "symbol": "SPY",
       "price": 739.22,
       "change_percent": "0.2264",
-      "volume": 48169377,
+      "volume": 49319144,
       "latest_trading_day": "2026-06-08",
       "change_7d": -2.04,
       "change_30d": 3.54,
@@ -47,13 +47,13 @@
         "2026-04-20": 708.72
       },
       "asset_type": "stock",
-      "transformed_at": "2026-06-08T23:54:30.805425+00:00"
+      "transformed_at": "2026-06-09T16:33:18.810874+00:00"
     },
     "QQQ": {
       "symbol": "QQQ",
       "price": 716.07,
       "change_percent": "1.5616",
-      "volume": 46626635,
+      "volume": 47401451,
       "latest_trading_day": "2026-06-08",
       "change_7d": -2.65,
       "change_30d": 7.86,
@@ -96,13 +96,13 @@
         "2026-04-20": 646.79
       },
       "asset_type": "stock",
-      "transformed_at": "2026-06-08T23:54:30.805441+00:00"
+      "transformed_at": "2026-06-09T16:33:18.810902+00:00"
     },
     "AAPL": {
       "symbol": "AAPL",
       "price": 301.54,
       "change_percent": "-1.8872",
-      "volume": 76763772,
+      "volume": 77949082,
       "latest_trading_day": "2026-06-08",
       "change_7d": -3.51,
       "change_30d": 11.24,
@@ -145,26 +145,26 @@
         "2026-04-20": 273.05
       },
       "asset_type": "stock",
-      "transformed_at": "2026-06-08T23:54:30.805448+00:00"
+      "transformed_at": "2026-06-09T16:33:18.810912+00:00"
     },
     "Gold": {
       "symbol": "GC=F",
       "name": "Gold",
-      "price": 4342.8,
+      "price": 4284.2,
       "currency": "USD",
       "asset_type": "metal",
       "note": "Futures price - may differ from spot price",
-      "transformed_at": "2026-06-08T23:54:30.805456+00:00"
+      "transformed_at": "2026-06-09T16:33:18.810929+00:00"
     },
     "Silver": {
       "symbol": "SI=F",
       "name": "Silver",
-      "price": 68.11,
+      "price": 65.31,
       "currency": "USD",
       "asset_type": "metal",
       "note": "Futures price - may differ from spot price",
-      "transformed_at": "2026-06-08T23:54:30.805462+00:00"
+      "transformed_at": "2026-06-09T16:33:18.810937+00:00"
     }
   },
-  "updated_at": "2026-06-08T23:54:30.825168+00:00"
+  "updated_at": "2026-06-09T16:33:18.829310+00:00"
 }
