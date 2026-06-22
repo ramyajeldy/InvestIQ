@@ -47,7 +47,7 @@
         "2026-04-30": 718.66
       },
       "asset_type": "stock",
-      "transformed_at": "2026-06-19T16:33:13.788874+00:00"
+      "transformed_at": "2026-06-22T18:13:42.401568+00:00"
     },
     "QQQ": {
       "symbol": "QQQ",
@@ -96,7 +96,7 @@
         "2026-04-30": 667.74
       },
       "asset_type": "stock",
-      "transformed_at": "2026-06-19T16:33:13.788890+00:00"
+      "transformed_at": "2026-06-22T18:13:42.401586+00:00"
     },
     "AAPL": {
       "symbol": "AAPL",
@@ -145,26 +145,26 @@
         "2026-04-30": 271.35
       },
       "asset_type": "stock",
-      "transformed_at": "2026-06-19T16:33:13.788898+00:00"
+      "transformed_at": "2026-06-22T18:13:42.401594+00:00"
     },
     "Gold": {
       "symbol": "GC=F",
       "name": "Gold",
-      "price": 4164.8,
+      "price": 4202.4,
       "currency": "USD",
       "asset_type": "metal",
       "note": "Futures price - may differ from spot price",
-      "transformed_at": "2026-06-19T16:33:13.788908+00:00"
+      "transformed_at": "2026-06-22T18:13:42.401604+00:00"
     },
     "Silver": {
       "symbol": "SI=F",
       "name": "Silver",
-      "price": 64.58,
+      "price": 65.44,
       "currency": "USD",
       "asset_type": "metal",
       "note": "Futures price - may differ from spot price",
-      "transformed_at": "2026-06-19T16:33:13.788914+00:00"
+      "transformed_at": "2026-06-22T18:13:42.401611+00:00"
     }
   },
-  "updated_at": "2026-06-19T16:33:13.810267+00:00"
+  "updated_at": "2026-06-22T18:13:42.422636+00:00"
 }
