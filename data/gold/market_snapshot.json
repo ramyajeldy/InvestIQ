@@ -2,14 +2,15 @@
   "assets": {
     "SPY": {
       "symbol": "SPY",
-      "price": 745.76,
-      "change_percent": "-0.1352",
-      "volume": 47100878,
-      "latest_trading_day": "2026-07-01",
-      "change_7d": 0.18,
-      "change_30d": 0.96,
-      "change_ytd": 7.98,
+      "price": 744.78,
+      "change_percent": "-0.1314",
+      "volume": 57505953,
+      "latest_trading_day": "2026-07-02",
+      "change_7d": 1.53,
+      "change_30d": 1.51,
+      "change_ytd": 7.32,
       "history": {
+        "2026-07-02": 744.78,
         "2026-07-01": 745.76,
         "2026-06-30": 746.77,
         "2026-06-29": 741.0,
@@ -43,22 +44,22 @@
         "2026-05-18": 738.65,
         "2026-05-15": 739.17,
         "2026-05-14": 748.17,
-        "2026-05-13": 742.31,
-        "2026-05-12": 738.18
+        "2026-05-13": 742.31
       },
       "asset_type": "stock",
-      "transformed_at": "2026-07-02T16:07:02.662596+00:00"
+      "transformed_at": "2026-07-03T15:54:10.516943+00:00"
     },
     "QQQ": {
       "symbol": "QQQ",
-      "price": 725.17,
-      "change_percent": "-1.5250",
-      "volume": 40803791,
-      "latest_trading_day": "2026-07-01",
-      "change_7d": -1.73,
-      "change_30d": 2.73,
-      "change_ytd": 18.95,
+      "price": 712.6,
+      "change_percent": "-1.7334",
+      "volume": 51086080,
+      "latest_trading_day": "2026-07-02",
+      "change_7d": -0.15,
+      "change_30d": 1.58,
+      "change_ytd": 16.0,
       "history": {
+        "2026-07-02": 712.6,
         "2026-07-01": 725.17,
         "2026-06-30": 736.4,
         "2026-06-29": 724.08,
@@ -92,22 +93,22 @@
         "2026-05-18": 705.88,
         "2026-05-15": 708.93,
         "2026-05-14": 719.79,
-        "2026-05-13": 714.71,
-        "2026-05-12": 707.24
+        "2026-05-13": 714.71
       },
       "asset_type": "stock",
-      "transformed_at": "2026-07-02T16:07:02.662640+00:00"
+      "transformed_at": "2026-07-03T15:54:10.516972+00:00"
     },
     "AAPL": {
       "symbol": "AAPL",
-      "price": 294.38,
-      "change_percent": "1.7349",
-      "volume": 50164232,
-      "latest_trading_day": "2026-07-01",
-      "change_7d": -0.89,
-      "change_30d": -1.16,
-      "change_ytd": 5.85,
+      "price": 308.63,
+      "change_percent": "4.8407",
+      "volume": 75400626,
+      "latest_trading_day": "2026-07-02",
+      "change_7d": 4.87,
+      "change_30d": 3.23,
+      "change_ytd": 12.38,
       "history": {
+        "2026-07-02": 308.63,
         "2026-07-01": 294.38,
         "2026-06-30": 289.36,
         "2026-06-29": 281.74,
@@ -141,30 +142,29 @@
         "2026-05-18": 297.84,
         "2026-05-15": 300.23,
         "2026-05-14": 298.21,
-        "2026-05-13": 298.87,
-        "2026-05-12": 294.8
+        "2026-05-13": 298.87
       },
       "asset_type": "stock",
-      "transformed_at": "2026-07-02T16:07:02.662652+00:00"
+      "transformed_at": "2026-07-03T15:54:10.516984+00:00"
     },
     "Gold": {
       "symbol": "GC=F",
       "name": "Gold",
-      "price": 4139.2,
+      "price": 4180.5,
       "currency": "USD",
       "asset_type": "metal",
       "note": "Futures price - may differ from spot price",
-      "transformed_at": "2026-07-02T16:07:02.662670+00:00"
+      "transformed_at": "2026-07-03T15:54:10.516998+00:00"
     },
     "Silver": {
       "symbol": "SI=F",
       "name": "Silver",
-      "price": 61.535,
+      "price": 62.77,
       "currency": "USD",
       "asset_type": "metal",
       "note": "Futures price - may differ from spot price",
-      "transformed_at": "2026-07-02T16:07:02.662679+00:00"
+      "transformed_at": "2026-07-03T15:54:10.517006+00:00"
     }
   },
-  "updated_at": "2026-07-02T16:07:02.682408+00:00"
+  "updated_at": "2026-07-03T15:54:10.535637+00:00"
 }
