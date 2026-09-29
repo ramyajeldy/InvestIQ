@@ -2,15 +2,15 @@
   "assets": {
     "SPY": {
       "symbol": "SPY",
-      "price": 765.55,
-      "change_percent": "-0.7519",
-      "volume": 41555846,
+      "price": 765.61,
+      "change_percent": "-0.7441",
+      "volume": 42694469,
       "latest_trading_day": "2026-09-28",
       "change_7d": 0.39,
-      "change_30d": -1.39,
-      "change_ytd": 4.32,
+      "change_30d": -1.38,
+      "change_ytd": 4.33,
       "history": {
-        "2026-09-28": 765.55,
+        "2026-09-28": 765.61,
         "2026-09-25": 771.35,
         "2026-09-24": 767.18,
         "2026-09-23": 767.81,
@@ -47,13 +47,13 @@
         "2026-08-10": 773.03
       },
       "asset_type": "stock",
-      "transformed_at": "2026-09-28T20:25:12.490000+00:00"
+      "transformed_at": "2026-09-29T19:09:38.012310+00:00"
     },
     "QQQ": {
       "symbol": "QQQ",
       "price": 736.53,
       "change_percent": "-1.0705",
-      "volume": 40996647,
+      "volume": 41775024,
       "latest_trading_day": "2026-09-28",
       "change_7d": 2.74,
       "change_30d": 0.75,
@@ -96,13 +96,13 @@
         "2026-08-10": 720.87
       },
       "asset_type": "stock",
-      "transformed_at": "2026-09-28T20:25:12.490018+00:00"
+      "transformed_at": "2026-09-29T19:09:38.012332+00:00"
     },
     "AAPL": {
       "symbol": "AAPL",
       "price": 338.4,
       "change_percent": "-0.7828",
-      "volume": 32441517,
+      "volume": 32820848,
       "latest_trading_day": "2026-09-28",
       "change_7d": 0.42,
       "change_30d": 10.61,
@@ -145,26 +145,26 @@
         "2026-08-10": 308.26
       },
       "asset_type": "stock",
-      "transformed_at": "2026-09-28T20:25:12.490027+00:00"
+      "transformed_at": "2026-09-29T19:09:38.012341+00:00"
     },
     "Gold": {
       "symbol": "GC=F",
       "name": "Gold",
-      "price": 4154.6,
+      "price": 4203.6,
       "currency": "USD",
       "asset_type": "metal",
       "note": "Futures price - may differ from spot price",
-      "transformed_at": "2026-09-28T20:25:12.490044+00:00"
+      "transformed_at": "2026-09-29T19:09:38.012364+00:00"
     },
     "Silver": {
       "symbol": "SI=F",
       "name": "Silver",
-      "price": 61.165,
+      "price": 61.715,
       "currency": "USD",
       "asset_type": "metal",
       "note": "Futures price - may differ from spot price",
-      "transformed_at": "2026-09-28T20:25:12.490055+00:00"
+      "transformed_at": "2026-09-29T19:09:38.012374+00:00"
     }
   },
-  "updated_at": "2026-09-28T20:25:12.511490+00:00"
+  "updated_at": "2026-09-29T19:09:38.033401+00:00"
 }
